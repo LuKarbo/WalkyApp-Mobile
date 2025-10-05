@@ -8,20 +8,7 @@ export default function RootLayout() {
         <AuthProvider>
             <ToastProvider>
                 <StatusBar style="auto" />
-                <Stack screenOptions={{ headerShown: false }}>
-                    <Stack.Screen name="index" />
-                    <Stack.Screen name="(auth)" />
-                    <Stack.Screen name="(client)" />
-                    <Stack.Screen name="(walker)" />
-                    <Stack.Screen 
-                        name="profile" 
-                        options={{
-                            presentation: 'modal',
-                            headerShown: true,
-                            headerTitle: 'Mi Perfil'
-                        }}
-                    />
-                </Stack>
+                <Stack screenOptions={{ headerShown: false }} />
             </ToastProvider>
         </AuthProvider>
     );

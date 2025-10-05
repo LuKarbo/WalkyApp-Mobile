@@ -1,6 +1,9 @@
+import { useRouter } from 'expo-router';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export default function ActionsSection({ onEditProfile, onAddPet, onLogout }) {
+export default function ActionsSection({ onEditProfile, onLogout }) {
+    const router = useRouter();
+
     return (
         <View style={styles.actionsSection}>
             <TouchableOpacity
@@ -14,10 +17,10 @@ export default function ActionsSection({ onEditProfile, onAddPet, onLogout }) {
 
             <TouchableOpacity
                 style={styles.actionButton}
-                onPress={onAddPet}
+                onPress={() => router.push('/(pet)/')}
             >
                 <Text style={styles.actionIcon}>🐕</Text>
-                <Text style={styles.actionText}>Agregar Mascota</Text>
+                <Text style={styles.actionText}>Mis Mascotas</Text>
                 <Text style={styles.actionArrow}>›</Text>
             </TouchableOpacity>
 

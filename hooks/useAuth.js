@@ -23,15 +23,14 @@ export const AuthProvider = ({ children }) => {
         const inAuthGroup = segments[0] === '(auth)';
         const inClientGroup = segments[0] === '(client)';
         const inWalkerGroup = segments[0] === '(walker)';
+        const inPetGroup = segments[0] === '(pet)';
 
         if (!user && !inAuthGroup) {
-            
             router.replace('/(auth)/login');
         } else if (user) {
-            
-            if (user.role === 'client' && !inClientGroup) {
+            if (user.role === 'client' && !inClientGroup && !inPetGroup && !inAuthGroup) {
                 router.replace('/(client)');
-            } else if (user.role === 'walker' && !inWalkerGroup) {
+            } else if (user.role === 'walker' && !inWalkerGroup && !inAuthGroup) {
                 router.replace('/(walker)');
             }
         }
