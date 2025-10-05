@@ -1,18 +1,13 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import {
-    Image,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
-} from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import { useToast } from '../../backend/Context/ToastContext';
+import PhotoSelector from '../../components/client/editProfile/PhotoSelector';
+import ProfileFormFields from '../../components/client/editProfile/ProfileFormFields';
+import ProfilePhotoSection from '../../components/client/editProfile/ProfilePhotoSection';
+import SaveButton from '../../components/client/editProfile/SaveButton';
 import { useAuth } from '../../hooks/useAuth';
 
-// Fotos predefinidas
 const PRESET_PHOTOS = [
     'https://i.pravatar.cc/300?img=1',
     'https://i.pravatar.cc/300?img=2',
@@ -32,7 +27,6 @@ export default function EditProfileClientScreen() {
     const [showPhotoSelector, setShowPhotoSelector] = useState(false);
 
     const handleSave = () => {
-        
         if (!fullName.trim()) {
             showError('El nombre es obligatorio');
             return;
@@ -64,92 +58,39 @@ export default function EditProfileClientScreen() {
         console.log('Ubicación:', updatedData.location || '(sin cambios)');
         console.log('====================================');
 
-        // Aquí iría la llamada a la API
-        // await UserAPI.updateUser(user.id, updatedData);
-
         showSuccess('Tus cambios han sido guardados correctamente');
         router.back();
     };
 
+    const handleSelectPhoto = (photo) => {
+        setSelectedPhoto(photo);
+        setShowPhotoSelector(false);
+    };
+
     return (
         <ScrollView style={styles.container}>
-            
-            <View style={styles.photoSection}>
-                <TouchableOpacity onPress={() => setShowPhotoSelector(!showPhotoSelector)}>
-                    <Image source={{ uri: selectedPhoto }} style={styles.profileImage} />
-                    <View style={styles.editPhotoBadge}>
-                        <Text style={styles.editPhotoIcon}>✏️</Text>
-                    </View>
-                </TouchableOpacity>
-                <Text style={styles.photoLabel}>Toca para cambiar foto</Text>
-            </View>
+            <ProfilePhotoSection
+                selectedPhoto={selectedPhoto}
+                onPress={() => setShowPhotoSelector(!showPhotoSelector)}
+            />
 
-            {showPhotoSelector && (
-                <View style={styles.photoSelector}>
-                    <Text style={styles.sectionTitle}>Selecciona una foto</Text>
-                    <View style={styles.photoGrid}>
-                        {PRESET_PHOTOS.map((photo, index) => (
-                            <TouchableOpacity
-                                key={index}
-                                onPress={() => {
-                                    setSelectedPhoto(photo);
-                                    setShowPhotoSelector(false);
-                                }}
-                                style={[
-                                    styles.photoOption,
-                                    selectedPhoto === photo && styles.photoOptionSelected,
-                                ]}
-                            >
-                                <Image source={{ uri: photo }} style={styles.photoOptionImage} />
-                                {selectedPhoto === photo && (
-                                    <View style={styles.selectedBadge}>
-                                        <Text style={styles.selectedIcon}>✓</Text>
-                                    </View>
-                                )}
-                            </TouchableOpacity>
-                        ))}
-                    </View>
-                </View>
-            )}
+            <PhotoSelector
+                photos={PRESET_PHOTOS}
+                selectedPhoto={selectedPhoto}
+                onSelectPhoto={handleSelectPhoto}
+                visible={showPhotoSelector}
+            />
 
-            <View style={styles.formSection}>
-                <View style={styles.inputContainer}>
-                    <Text style={styles.label}>Nombre Completo *</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={fullName}
-                        onChangeText={setFullName}
-                        placeholder="Ingresa tu nombre completo"
-                    />
-                </View>
+            <ProfileFormFields
+                fullName={fullName}
+                onFullNameChange={setFullName}
+                phone={phone}
+                onPhoneChange={setPhone}
+                location={location}
+                onLocationChange={setLocation}
+            />
 
-                <View style={styles.inputContainer}>
-                    <Text style={styles.label}>Teléfono</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={phone}
-                        onChangeText={setPhone}
-                        placeholder="Ej: +54 11 1234-5678"
-                        keyboardType="phone-pad"
-                    />
-                </View>
-
-                <View style={styles.inputContainer}>
-                    <Text style={styles.label}>Ubicación</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={location}
-                        onChangeText={setLocation}
-                        placeholder="Ej: Buenos Aires, Argentina"
-                    />
-                </View>
-            </View>
-
-            <View style={styles.buttonSection}>
-                <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-                    <Text style={styles.saveButtonText}>Guardar Cambios</Text>
-                </TouchableOpacity>
-            </View>
+            <SaveButton onPress={handleSave} />
         </ScrollView>
     );
 }
@@ -158,128 +99,5 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#f9fafb',
-    },
-    photoSection: {
-        alignItems: 'center',
-        paddingVertical: 32,
-        backgroundColor: '#ffffff',
-    },
-    profileImage: {
-        width: 120,
-        height: 120,
-        borderRadius: 60,
-        borderWidth: 4,
-        borderColor: '#6366f1',
-    },
-    editPhotoBadge: {
-        position: 'absolute',
-        bottom: 0,
-        right: 0,
-        backgroundColor: '#6366f1',
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderWidth: 3,
-        borderColor: '#ffffff',
-    },
-    editPhotoIcon: {
-        fontSize: 16,
-    },
-    photoLabel: {
-        marginTop: 12,
-        fontSize: 14,
-        color: '#6b7280',
-    },
-    photoSelector: {
-        backgroundColor: '#ffffff',
-        marginHorizontal: 16,
-        marginTop: 16,
-        padding: 16,
-        borderRadius: 12,
-    },
-    sectionTitle: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#1f2937',
-        marginBottom: 16,
-    },
-    photoGrid: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        gap: 12,
-        justifyContent: 'center',
-    },
-    photoOption: {
-        position: 'relative',
-    },
-    photoOptionSelected: {
-        opacity: 1,
-    },
-    photoOptionImage: {
-        width: 80,
-        height: 80,
-        borderRadius: 40,
-        borderWidth: 3,
-        borderColor: '#e5e7eb',
-    },
-    selectedBadge: {
-        position: 'absolute',
-        bottom: 0,
-        right: 0,
-        backgroundColor: '#10b981',
-        width: 24,
-        height: 24,
-        borderRadius: 12,
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderWidth: 2,
-        borderColor: '#ffffff',
-    },
-    selectedIcon: {
-        color: '#ffffff',
-        fontSize: 12,
-        fontWeight: 'bold',
-    },
-    formSection: {
-        backgroundColor: '#ffffff',
-        marginHorizontal: 16,
-        marginTop: 16,
-        padding: 16,
-        borderRadius: 12,
-    },
-    inputContainer: {
-        marginBottom: 20,
-    },
-    label: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#374151',
-        marginBottom: 8,
-    },
-    input: {
-        backgroundColor: '#f9fafb',
-        borderWidth: 1,
-        borderColor: '#e5e7eb',
-        borderRadius: 8,
-        padding: 12,
-        fontSize: 16,
-        color: '#1f2937',
-    },
-    buttonSection: {
-        paddingHorizontal: 16,
-        paddingVertical: 24,
-    },
-    saveButton: {
-        backgroundColor: '#6366f1',
-        padding: 16,
-        borderRadius: 12,
-        alignItems: 'center',
-    },
-    saveButtonText: {
-        color: '#ffffff',
-        fontSize: 16,
-        fontWeight: 'bold',
     },
 });

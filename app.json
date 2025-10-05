@@ -2,7 +2,7 @@
   "expo": {
     "name": "WalkyAPP",
     "slug": "walkyapp",
-    "version": "1.0.0",
+    "version": "1.0.3",
     "scheme": "walkyapp",
     "platforms": ["ios", "android"],
     "orientation": "portrait",
@@ -13,9 +13,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#6366f1"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.walkyapp.walkyapp"
@@ -29,11 +27,7 @@
     },
     "plugins": [
       "expo-router",
-      "expo-notifications",
-      {
-        "icon": "./assets/adaptive-icon.png",
-        "color": "#ffffff"
-      }
+      "expo-notifications"
     ]
   }
 }

@@ -69,7 +69,7 @@ export default function WalkerLayout() {
                     headerTitle: 'Editar Perfil',
                     headerLeft: () => (
                         <TouchableOpacity 
-                            onPress={() => {showWarning('Operación Cancelada.'); router.back()}}
+                            onPress={() => {showWarning('Operación Cancelada.'); router.push('/settings')}}
                             style={{ marginLeft: 16 }}
                         >
                             <Text style={{ color: '#fff', fontSize: 16 }}>← Cancelar</Text>
