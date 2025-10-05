@@ -10,4 +10,14 @@ export const UserController = {
             throw error;
         }
     },
+
+    async mobileUpdateUser(id, userData) {
+        try {
+            return await UserService.mobileUpdateUser(id, userData);
+        } catch (error) {
+            console.error('Error in UserController.mobileUpdateUser:', error);
+            throw error;
+        }
+    }
+
 };

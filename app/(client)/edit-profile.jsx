@@ -2,6 +2,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import { useToast } from '../../backend/Context/ToastContext';
+import { UserController } from '../../backend/Controllers/UserController';
 import PhotoSelector from '../../components/client/editProfile/PhotoSelector';
 import ProfileFormFields from '../../components/client/editProfile/ProfileFormFields';
 import ProfilePhotoSection from '../../components/client/editProfile/ProfilePhotoSection';
@@ -16,7 +17,7 @@ const PRESET_PHOTOS = [
 ];
 
 export default function EditProfileClientScreen() {
-    const { user } = useAuth();
+    const { user, updateUser } = useAuth();
     const router = useRouter();
     const { showSuccess, showError } = useToast();
 
@@ -25,8 +26,9 @@ export default function EditProfileClientScreen() {
     const [phone, setPhone] = useState(user?.phone || '');
     const [location, setLocation] = useState(user?.location || '');
     const [showPhotoSelector, setShowPhotoSelector] = useState(false);
+    const [loading, setLoading] = useState(false);
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (!fullName.trim()) {
             showError('El nombre es obligatorio');
             return;
@@ -42,24 +44,30 @@ export default function EditProfileClientScreen() {
             return;
         }
 
-        const updatedData = {
-            userId: user?.id,
-            profileImage: selectedPhoto,
-            fullName: fullName.trim(),
-            phone: phone.trim(),
-            location: location.trim(),
-        };
+        try {
+            setLoading(true);
 
-        console.log('=== DATOS DE PERFIL ACTUALIZADOS ===');
-        console.log('ID de usuario:', updatedData.userId);
-        console.log('Foto de perfil:', updatedData.profileImage);
-        console.log('Nombre completo:', updatedData.fullName);
-        console.log('Teléfono:', updatedData.phone || '(sin cambios)');
-        console.log('Ubicación:', updatedData.location || '(sin cambios)');
-        console.log('====================================');
+            const updatedData = {
+                name: fullName.trim(),
+                profileImage: selectedPhoto,
+                phone: phone.trim(),
+                location: location.trim(),
+            };
 
-        showSuccess('Tus cambios han sido guardados correctamente');
-        router.back();
+            const updatedUser = await UserController.mobileUpdateUser(user.id, updatedData);
+            
+            if (updateUser) {
+                updateUser(updatedUser);
+            }
+
+            showSuccess('Tus cambios han sido guardados correctamente');
+            router.push('/settings');
+        } catch (error) {
+            console.error('Error al actualizar perfil:', error);
+            showError(error.message || 'Error al actualizar el perfil');
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleSelectPhoto = (photo) => {
@@ -90,7 +98,7 @@ export default function EditProfileClientScreen() {
                 onLocationChange={setLocation}
             />
 
-            <SaveButton onPress={handleSave} />
+            <SaveButton onPress={handleSave} loading={loading} />
         </ScrollView>
     );
 }

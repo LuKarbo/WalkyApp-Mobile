@@ -105,6 +105,13 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const updateUser = (updatedData) => {
+        setUser(prevUser => ({
+            ...prevUser,
+            ...updatedData
+        }));
+    };
+
     const clearError = () => setError(null);
 
     const value = {
@@ -115,6 +122,7 @@ export const AuthProvider = ({ children }) => {
         logout,
         register,
         checkSession,
+        updateUser,
         clearError,
         isAuthenticated: !!user
     };

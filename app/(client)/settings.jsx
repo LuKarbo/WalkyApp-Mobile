@@ -1,6 +1,8 @@
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useState } from 'react';
 import { Alert, ScrollView, StyleSheet } from 'react-native';
 import { useToast } from '../../backend/Context/ToastContext';
+import { UserController } from '../../backend/Controllers/UserController';
 import ActionsSection from '../../components/client/settings/ActionsSection';
 import Footer from '../../components/client/settings/Footer';
 import InfoSection from '../../components/client/settings/InfoSection';
@@ -8,9 +10,26 @@ import ProfileHeader from '../../components/client/settings/ProfileHeader';
 import { useAuth } from '../../hooks/useAuth';
 
 export default function ClientSettingsScreen() {
-    const { user, logout } = useAuth();
+    const { user, logout, updateUser } = useAuth();
     const router = useRouter();
     const { showSuccess, showError } = useToast();
+    const [currentUser, setCurrentUser] = useState(user);
+
+    useFocusEffect(
+        useCallback(() => {
+            const loadUserData = async () => {
+                try {
+                    const userData = await UserController.fetchUserById(user.id);
+                    setCurrentUser(userData);
+                    updateUser(userData);
+                } catch (error) {
+                    console.error('Error cargando datos del usuario:', error);
+                }
+            };
+
+            loadUserData();
+        }, [user?.id])
+    );
 
     const handleLogout = () => {
         Alert.alert(
@@ -61,16 +80,16 @@ export default function ClientSettingsScreen() {
     return (
         <ScrollView style={styles.container}>
             <ProfileHeader
-                user={user}
+                user={currentUser}
                 getRoleBadgeColor={getRoleBadgeColor}
                 getRoleLabel={getRoleLabel}
             />
 
-            <InfoSection user={user} />
+            <InfoSection user={currentUser} />
 
             <ActionsSection
                 onEditProfile={() => router.push('/edit-profile')}
-                onAddPet={() => Alert.alert('Próximamente', 'Agregar mascota en desarrollo')}
+                onAddPet={() => router.push('/(pet)')}
                 onLogout={handleLogout}
             />
 

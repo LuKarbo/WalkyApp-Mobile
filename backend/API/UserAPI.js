@@ -27,4 +27,36 @@ export const UserAPI = {
             throw new Error("Usuario no encontrado");
         }
     },
+
+    async mobileUpdateUser(id, userData) {
+        console.log('mando');
+        try {
+            const response = await apiClient.put(`/users/mobile/${id}`, {
+                name: userData.name || null,
+                profileImage: userData.profileImage || null,
+                phone: userData.phone || null,
+                location: userData.location || null
+            });
+            
+            const user = response.data.user;
+            console.log('respuesta');
+            console.log(user);
+            return {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                profileImage: user.profileImage || user.profile_image,
+                suscription: user.suscription || user.subscription || 'Basic',
+                phone: user.phone || "",
+                location: user.location || "",
+                joinedDate: user.joinedDate || user.joined_date,
+                status: user.status,
+                lastLogin: user.lastLogin || user.last_login
+            };
+        } catch (error) {
+            console.error("Error actualizando usuario:", error);
+            throw new Error(error.response?.data?.message || "Error al actualizar usuario");
+        }
+    }
 };
