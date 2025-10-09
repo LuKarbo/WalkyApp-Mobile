@@ -1,4 +1,3 @@
-// app/(walker)/index.jsx
 import { useEffect, useState } from 'react';
 import {
     Alert,

@@ -4,7 +4,7 @@
     "slug": "walkyapp",
     "version": "1.0.3",
     "scheme": "walkyapp",
-    "platforms": ["ios", "android"],
+    "platforms": ["ios", "android", "web"],
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",

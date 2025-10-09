@@ -31,7 +31,6 @@ export default function PetLayout() {
                     ),
                 }}
             />
-
             <Stack.Screen
                 name="add-pet"
                 options={{
@@ -44,6 +43,21 @@ export default function PetLayout() {
                 options={{
                     title: 'Editar Mascota',
                     presentation: 'modal',
+                }}
+            />
+            <Stack.Screen
+                name="request-walk-single"
+                options={{
+                    headerShown: true,
+                    headerTitle: 'Solicitar Paseo',
+                    headerLeft: () => (
+                        <TouchableOpacity 
+                            onPress={() => router.push('/(pet)')}
+                            style={{ marginLeft: 16 }}
+                        >
+                            <Text style={{ color: '#fff', fontSize: 16 }}>← Volver</Text>
+                        </TouchableOpacity>
+                    ),
                 }}
             />
         </Stack>

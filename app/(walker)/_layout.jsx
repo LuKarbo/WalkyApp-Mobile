@@ -19,64 +19,71 @@ export default function WalkerLayout() {
                 tabBarActiveTintColor: '#10b981',
                 tabBarInactiveTintColor: '#9ca3af',
                 tabBarStyle: {
-                    height: 60,
-                    paddingBottom: 8,
-                    paddingTop: 8,
+                    height: 90,
+                    paddingBottom: 12,
+                    paddingTop: 12,
+                },
+                tabBarLabelStyle: {
+                    fontSize: 13,
+                    marginTop: 4,
                 },
             }}
         >
-            <Tabs.Screen
-                name="index"
-                options={{
-                    title: 'Paseos',
-                    tabBarIcon: ({ color, size }) => (
-                        <Text style={{ fontSize: size }}>🐕</Text>
-                    ),
-                }}
-            />
-            <Tabs.Screen
-                name="requests"
-                options={{
-                    title: 'Solicitudes',
-                    tabBarIcon: ({ color, size }) => (
-                        <Text style={{ fontSize: size }}>📬</Text>
-                    ),
-                }}
-            />
-            <Tabs.Screen
-                name="history"
-                options={{
-                    title: 'Historial',
-                    tabBarIcon: ({ color, size }) => (
-                        <Text style={{ fontSize: size }}>📋</Text>
-                    ),
-                }}
-            />
-            <Tabs.Screen
-                name="settings"
-                options={{
-                    title: 'Ajustes',
-                    tabBarIcon: ({ color, size }) => (
-                        <Text style={{ fontSize: size }}>⚙️</Text>
-                    ),
-                }}
-            />
-            <Tabs.Screen
-                name="edit-profile"
-                options={{
-                    href: null,
-                    headerShown: true,
-                    headerTitle: 'Editar Perfil',
-                    headerLeft: () => (
-                        <TouchableOpacity 
-                            onPress={() => {showWarning('Operación Cancelada.'); router.push('/settings')}}
-                            style={{ marginLeft: 16 }}
-                        >
-                            <Text style={{ color: '#fff', fontSize: 16 }}>← Cancelar</Text>
-                        </TouchableOpacity>
-                    ),
-                }}
-            />
+        <Tabs.Screen
+            name="index"
+            options={{
+                title: 'Paseos',
+                tabBarIcon: ({ color, size }) => (
+                    <Text style={{ fontSize: size }}>🐕</Text>
+                ),
+            }}
+        />
+        <Tabs.Screen
+            name="requests"
+            options={{
+                title: 'Solicitudes',
+                tabBarIcon: ({ color, size }) => (
+                    <Text style={{ fontSize: size }}>📬</Text>
+                ),
+            }}
+        />
+        <Tabs.Screen
+            name="history"
+            options={{
+                title: 'Historial',
+                tabBarIcon: ({ color, size }) => (
+                    <Text style={{ fontSize: size }}>📋</Text>
+                ),
+            }}
+        />
+        <Tabs.Screen
+            name="settings"
+            options={{
+                title: 'Ajustes',
+                tabBarIcon: ({ color, size }) => (
+                    <Text style={{ fontSize: size }}>⚙️</Text>
+                ),
+            }}
+        />
+        <Tabs.Screen
+            name="edit-profile"
+            options={{
+                href: null,
+                headerShown: true,
+                headerTitle: 'Editar Perfil',
+                headerLeft: () => (
+                    <TouchableOpacity
+                    onPress={() => {
+                        showWarning('Operación Cancelada.');
+                        router.push('/settings');
+                    }}
+                    style={{ marginLeft: 16 }}
+                    >
+                        <Text style={{ color: '#fff', fontSize: 16 }}>← Cancelar</Text>
+                    </TouchableOpacity>
+                ),
+            }}
+        />
         </Tabs>
     );
 }

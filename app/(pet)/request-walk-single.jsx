@@ -38,7 +38,7 @@ export default function RequestWalkSingleScreen() {
     };
 
     const handleSuccess = () => {
-        router.push('/(pet)/index');
+        router.push('/(pet)');
     };
 
     if (step === 'loading' || !selectedPet) {
