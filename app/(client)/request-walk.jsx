@@ -39,7 +39,7 @@ export default function RequestWalkScreen({ navigation }) {
         setSelectedPets([]);
         setSelectedWalker(null);
         setWalkerSettings(null);
-        navigation.push('/index');
+        navigation.push('/(client)/index');
     };
 
     return (

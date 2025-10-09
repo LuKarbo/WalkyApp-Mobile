@@ -53,7 +53,13 @@ export default function PetsIndexScreen() {
     };
 
     const handleRequestWalk = (pet) => {
-        showSuccess('Funcionalidad de paseo próximamente');
+        router.push({
+            pathname: '/(pet)/request-walk-single',
+            params: { 
+                petId: pet.id,
+                petData: JSON.stringify(pet)
+            }
+        });
     };
 
     if (loading) {
