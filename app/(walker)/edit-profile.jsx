@@ -49,15 +49,7 @@ export default function EditProfileWalkerScreen() {
             phone: phone.trim(),
             location: location.trim(),
         };
-
-        console.log('=== DATOS DE PERFIL ACTUALIZADOS ===');
-        console.log('ID de usuario:', updatedData.userId);
-        console.log('Foto de perfil:', updatedData.profileImage);
-        console.log('Nombre completo:', updatedData.fullName);
-        console.log('Teléfono:', updatedData.phone || '(sin cambios)');
-        console.log('Ubicación:', updatedData.location || '(sin cambios)');
-        console.log('====================================');
-
+        
         showSuccess('Tus cambios han sido guardados correctamente');
         router.back();
     };

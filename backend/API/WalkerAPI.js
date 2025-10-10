@@ -108,7 +108,7 @@ export const WalkerAPI = {
     },
 
     async getWalkerEarningsSettings(walkerId) {
-        console.log('earns')
+        
         try {
             if (!walkerId) {
                 throw new Error('ID de paseador requerido');
@@ -232,7 +232,7 @@ export const WalkerAPI = {
             if (!walkerId) {
                 throw new Error('ID de paseador requerido');
             }
-            console.log('consulta')
+            
             const response = await apiClient.get(`/walkers/${walkerId}/earnings`);
             return response.data.earnings || {
                 monthly: 0,

@@ -3,7 +3,6 @@ import apiClient from '../config/ApiClient.js';
 export const UserAPI = {
 
     async getUserById(id) {
-        console.log("UsersAPI - Obteniendo usuario por ID:", id);
         
         try {
             const response = await apiClient.get(`/users/${id}`);
@@ -29,7 +28,6 @@ export const UserAPI = {
     },
 
     async mobileUpdateUser(id, userData) {
-        console.log('mando');
         try {
             const response = await apiClient.put(`/users/mobile/${id}`, {
                 name: userData.name || null,
@@ -39,8 +37,6 @@ export const UserAPI = {
             });
             
             const user = response.data.user;
-            console.log('respuesta');
-            console.log(user);
             return {
                 id: user.id,
                 name: user.name,

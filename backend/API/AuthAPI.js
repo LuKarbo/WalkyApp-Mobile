@@ -3,13 +3,12 @@ import apiClient from '../config/ApiClient.js';
 export const AuthAPI = {
     async login(credentials) {        
         try {
-            console.log("llega, ", {credentials});
+            
             const response = await apiClient.post('/auth/login', {
                 email: credentials.email,
                 password: credentials.password
             });
-            console.log("fin");
-            console.log(response);
+            
             const userData = response.data.user;
             
             if (userData.token) {
@@ -38,7 +37,6 @@ export const AuthAPI = {
     },
 
     async checkSession(token) {
-        console.log("Simulando verificación de sesión con token:", token);
         
         try {
             const response = await apiClient.post('/auth/check-session', null, {
@@ -75,7 +73,6 @@ export const AuthAPI = {
     },
 
     async logout() {
-        console.log("Simulando cierre de sesión");
         
         try {
             await apiClient.post('/auth/logout');

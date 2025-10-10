@@ -171,6 +171,16 @@ export const WalksAPI = {
         }
     },
 
+    async cancelWalk(walkId) {
+        try {
+            const response = await apiClient.patch(`/walks/${walkId}/cancel`);
+            return response.data.walk;
+        } catch (error) {
+            console.error(`Error cancel walk ${walkId}:`, error);
+            throw error;
+        }
+    },
+
     async deleteWalk(walkId) {
         try {
             const response = await apiClient.delete(`/walks/${walkId}`);

@@ -77,15 +77,16 @@ export const AuthProvider = ({ children }) => {
     const logout = async () => {
         try {
             setIsLoading(true);
+            router.replace('/(auth)/login');
             await AuthController.logout();
             setUser(null);
-            router.replace('/(auth)/login');
         } catch (error) {
             console.error('Error en logout:', error);
         } finally {
             setIsLoading(false);
         }
     };
+
 
     const register = async (data) => {
         try {

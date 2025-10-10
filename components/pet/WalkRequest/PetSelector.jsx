@@ -8,7 +8,7 @@ export default function PetSelector({ selectedPets, onPetsChange, onContinue }) 
     const [pets, setPets] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const user = useUser();
+    const user = useUser?.();
 
     useEffect(() => {
         loadPets();
@@ -16,6 +16,9 @@ export default function PetSelector({ selectedPets, onPetsChange, onContinue }) 
 
     const loadPets = async () => {
         try {
+            if (!user) {
+                return null;
+            }
             setLoading(true);
             setError(null);
             const petsData = await PetsController.fetchPetsByOwner(user?.id);

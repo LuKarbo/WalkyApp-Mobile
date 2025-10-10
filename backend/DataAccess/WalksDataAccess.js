@@ -108,5 +108,14 @@ export const WalksDataAccess = {
             console.error(`DataAccess - Error finishing walk ${walkId}:`, error);
             throw error;
         }
+    },
+
+    async cancelWalk(walkId) {
+        try {
+            return await WalksAPI.cancelWalk(walkId);
+        } catch (error) {
+            console.error(`DataAccess - Error finishing walk ${walkId}:`, error);
+            throw error;
+        }
     }
 };

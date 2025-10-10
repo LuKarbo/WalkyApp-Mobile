@@ -48,15 +48,6 @@ export default function ClientLayout() {
             }}
         />
         <Tabs.Screen
-            name="history"
-            options={{
-                title: 'Historial',
-                tabBarIcon: ({ color, size }) => (
-                    <Text style={{ fontSize: size }}>📋</Text>
-                ),
-            }}
-        />
-        <Tabs.Screen
             name="settings"
             options={{
                 title: 'Ajustes',

@@ -93,7 +93,9 @@ export default function WalkSchedule({
             await WalksController.createWalkRequest(walkRequest);
             
             showSuccess('Tu solicitud de paseo ha sido registrada correctamente');
+            
             onSuccess();
+
         } catch (error) {
             showError('No se pudo enviar la solicitud');
         } finally {

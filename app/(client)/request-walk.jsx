@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import PetSelector from '../../components/pet/WalkRequest/PetSelector';
@@ -9,6 +10,7 @@ export default function RequestWalkScreen({ navigation }) {
     const [selectedPets, setSelectedPets] = useState([]);
     const [selectedWalker, setSelectedWalker] = useState(null);
     const [walkerSettings, setWalkerSettings] = useState(null);
+    const router = useRouter(); 
 
     const handlePetsSelected = () => {
         if (selectedPets.length > 0) {
@@ -39,7 +41,7 @@ export default function RequestWalkScreen({ navigation }) {
         setSelectedPets([]);
         setSelectedWalker(null);
         setWalkerSettings(null);
-        navigation.push('/(client)');
+        router.push('/(client)');
     };
 
     return (

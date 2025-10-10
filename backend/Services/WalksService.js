@@ -321,7 +321,7 @@ export const WalksService = {
                     break;
                     
                 case 'Cancelado':
-                    updatedWalk = await WalksDataAccess.updateWalkStatus(walkId, newStatus);
+                    updatedWalk = await WalksDataAccess.cancelWalk(walkId);
                     break;
                     
                 default:

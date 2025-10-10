@@ -22,7 +22,6 @@ export default function WalkerSelector({ onWalkerSelect, onBack }) {
             const walkersData = await WalkerController.fetchWalkers();
             const availableWalkers = walkersData.filter(walker => !walker.isPlaceholder);
             setWalkers(availableWalkers);
-            console.log(availableWalkers);
             await loadAllWalkersSettings(availableWalkers);
         } catch (err) {
             setError('Error al cargar paseadores');
