@@ -2,6 +2,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import { useToast } from '../../backend/Context/ToastContext';
+import { UserController } from '../../backend/Controllers/UserController';
 import PhotoSelector from '../../components/walker/editProfile/PhotoSelector';
 import ProfileFormFields from '../../components/walker/editProfile/ProfileFormFields';
 import ProfilePhotoSection from '../../components/walker/editProfile/ProfilePhotoSection';
@@ -16,7 +17,7 @@ const PRESET_PHOTOS = [
 ];
 
 export default function EditProfileWalkerScreen() {
-    const { user } = useAuth();
+    const { user, updateUser } = useAuth(); // ⬅️ AGREGAR updateUser
     const router = useRouter();
     const { showSuccess, showError } = useToast();
 
@@ -25,8 +26,9 @@ export default function EditProfileWalkerScreen() {
     const [phone, setPhone] = useState(user?.phone || '');
     const [location, setLocation] = useState(user?.location || '');
     const [showPhotoSelector, setShowPhotoSelector] = useState(false);
+    const [loading, setLoading] = useState(false);
 
-    const handleSave = () => {
+    const handleSave = async () => { 
         if (!fullName.trim()) {
             showError('El nombre es obligatorio');
             return;
@@ -42,16 +44,30 @@ export default function EditProfileWalkerScreen() {
             return;
         }
 
-        const updatedData = {
-            userId: user?.id,
-            profileImage: selectedPhoto,
-            fullName: fullName.trim(),
-            phone: phone.trim(),
-            location: location.trim(),
-        };
-        
-        showSuccess('Tus cambios han sido guardados correctamente');
-        router.back();
+        try {
+            setLoading(true);
+
+            const updatedData = {
+                name: fullName.trim(),
+                profileImage: selectedPhoto,
+                phone: phone.trim(),
+                location: location.trim(),
+            };
+
+            const updatedUser = await UserController.mobileUpdateUser(user.id, updatedData);
+            
+            if (updateUser) {
+                updateUser(updatedUser);
+            }
+
+            showSuccess('Tus cambios han sido guardados correctamente');
+            router.push('/settings');
+        } catch (error) {
+            console.error('Error al actualizar perfil:', error);
+            showError(error.message || 'Error al actualizar el perfil');
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleSelectPhoto = (photo) => {
@@ -82,7 +98,7 @@ export default function EditProfileWalkerScreen() {
                 onLocationChange={setLocation}
             />
 
-            <SaveButton onPress={handleSave} />
+            <SaveButton onPress={handleSave} loading={loading} /> {/* ⬅️ AGREGAR loading */}
         </ScrollView>
     );
 }

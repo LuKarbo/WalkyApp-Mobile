@@ -1,27 +1,29 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useUser } from '../../../backend/Context/UserContext';
 import { PetsController } from '../../../backend/Controllers/PetsController';
+import { useAuth } from '../../../hooks/useAuth';
 
 export default function PetSelector({ selectedPets, onPetsChange, onContinue }) {
     const [pets, setPets] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const user = useUser?.();
+    const { user } = useAuth();
 
     useEffect(() => {
-        loadPets();
+        if (user) { 
+            loadPets();
+        }
     }, []);
 
     const loadPets = async () => {
         try {
             if (!user) {
-                return null;
+                return;
             }
             setLoading(true);
             setError(null);
-            const petsData = await PetsController.fetchPetsByOwner(user?.id);
+            const petsData = await PetsController.fetchPetsByOwner(user.id);
             setPets(petsData || []);
         } catch (err) {
             setError('Error al cargar mascotas');

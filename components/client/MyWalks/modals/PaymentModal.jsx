@@ -9,7 +9,7 @@ import {
     View,
 } from 'react-native';
 
-export default function PaymentModal_Mobile({ visible, onClose, onConfirm, tripData, isLoading }) {
+export default function PaymentModal({ visible, onClose, onConfirm, tripData, isLoading }) {
     if (!tripData) return null;
 
     const getStatusColor = (status) => {

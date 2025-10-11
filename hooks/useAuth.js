@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }) => {
 
         if (!user && !inAuthGroup) {
             router.replace('/(auth)/login');
-        } else if (user) {
+        } else if (user && !isLoading) {
             if (user.role === 'client' && !inClientGroup && !inPetGroup && !inAuthGroup) {
                 router.replace('/(client)');
             } else if (user.role === 'walker' && !inWalkerGroup && !inAuthGroup) {
@@ -77,11 +77,13 @@ export const AuthProvider = ({ children }) => {
     const logout = async () => {
         try {
             setIsLoading(true);
-            router.replace('/(auth)/login');
             await AuthController.logout();
             setUser(null);
+            router.replace('/(auth)/login');
         } catch (error) {
             console.error('Error en logout:', error);
+            setUser(null);
+            router.replace('/(auth)/login');
         } finally {
             setIsLoading(false);
         }

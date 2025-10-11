@@ -7,7 +7,7 @@ import {
     View,
 } from 'react-native';
 
-export default function MyTripsHeaderComponent_Mobile({ 
+export default function MyTripsHeaderComponent({ 
     activeTab, 
     setActiveTab, 
     setShowCreateForm, 
@@ -21,9 +21,10 @@ export default function MyTripsHeaderComponent_Mobile({
             colors={['#3b82f6', '#10b981']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
-            style={styles.header}
+            style={styles.container}
         >
-            <View style={styles.topRow}>
+            
+            <View style={styles.bottomRow}>
                 <Text style={styles.title}>Mis Paseos</Text>
                 <TouchableOpacity
                     onPress={onRefresh}
@@ -37,34 +38,37 @@ export default function MyTripsHeaderComponent_Mobile({
                     )}
                 </TouchableOpacity>
             </View>
-            
-            <View style={styles.tabContainer}>
+            <View style={styles.tabsContainer}>
                 <TouchableOpacity
-                    onPress={() => setActiveTab("active")}
                     style={[
                         styles.tab,
-                        activeTab === "active" && styles.tabActive
+                        activeTab === "active" && styles.tabActive,
                     ]}
+                    onPress={() => setActiveTab("active")}
                 >
-                    <Text style={[
-                        styles.tabText,
-                        activeTab === "active" && styles.tabTextActive
-                    ]}>
-                        Paseos Activos ({activeTripsCount})
+                    <Text
+                        style={[
+                            styles.tabText,
+                            activeTab === "active" && styles.tabTextActive,
+                        ]}
+                    >
+                        Activos ({activeTripsCount})
                     </Text>
                 </TouchableOpacity>
-                
+
                 <TouchableOpacity
-                    onPress={() => setActiveTab("completed")}
                     style={[
                         styles.tab,
-                        activeTab === "completed" && styles.tabActive
+                        activeTab === "completed" && styles.tabActive,
                     ]}
+                    onPress={() => setActiveTab("completed")}
                 >
-                    <Text style={[
-                        styles.tabText,
-                        activeTab === "completed" && styles.tabTextActive
-                    ]}>
+                    <Text
+                        style={[
+                            styles.tabText,
+                            activeTab === "completed" && styles.tabTextActive,
+                        ]}
+                    >
                         Historial ({completedTripsCount})
                     </Text>
                 </TouchableOpacity>
@@ -74,76 +78,67 @@ export default function MyTripsHeaderComponent_Mobile({
 }
 
 const styles = StyleSheet.create({
-    header: {
+    container: {
+        borderRadius: 16,
         padding: 24,
-        paddingTop: 20,
-        borderBottomLeftRadius: 24,
-        borderBottomRightRadius: 24,
-    },
-    topRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 12,
+        marginHorizontal: 16,
+        marginTop: 16,
+        marginBottom: 24,
     },
     title: {
-        fontSize: 32,
-        fontWeight: 'bold',
+        fontSize: 28,
+        fontWeight: '700',
         color: '#ffffff',
+        marginBottom: 20,
     },
-    refreshButton: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: '#ffffff',
-        justifyContent: 'center',
-        alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-        elevation: 3,
-    },
-    refreshIcon: {
-        fontSize: 20,
-    },
-    tabContainer: {
+    tabsContainer: {
         flexDirection: 'row',
         gap: 12,
-        marginBottom: 16,
+        marginBottom: 12,
     },
     tab: {
+        flex: 1,
         paddingVertical: 12,
-        paddingHorizontal: 20,
+        paddingHorizontal: 16,
         borderRadius: 12,
         backgroundColor: 'rgba(255, 255, 255, 0.2)',
+        alignItems: 'center',
     },
     tabActive: {
         backgroundColor: '#ffffff',
     },
     tabText: {
-        fontSize: 14,
+        fontSize: 13,
         fontWeight: '600',
         color: '#ffffff',
     },
     tabTextActive: {
         color: '#3b82f6',
     },
-    createButton: {
+    bottomRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    subtitle: {
+        fontSize: 12,
+        color: 'rgba(255, 255, 255, 0.8)',
+        fontWeight: '500',
+    },
+    refreshButton: {
+        width: 32,
+        height: 32,
+        borderRadius: 16,
         backgroundColor: '#ffffff',
-        paddingVertical: 14,
-        paddingHorizontal: 24,
-        borderRadius: 12,
+        justifyContent: 'center',
         alignItems: 'center',
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.2,
-        shadowRadius: 8,
-        elevation: 5,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.15,
+        shadowRadius: 4,
+        elevation: 3,
     },
-    createButtonText: {
+    refreshIcon: {
         fontSize: 16,
-        fontWeight: '700',
-        color: '#3b82f6',
     },
 });

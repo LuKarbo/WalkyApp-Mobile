@@ -39,24 +39,6 @@ export default function WalkerLayout() {
             }}
         />
         <Tabs.Screen
-            name="requests"
-            options={{
-                title: 'Solicitudes',
-                tabBarIcon: ({ color, size }) => (
-                    <Text style={{ fontSize: size }}>📬</Text>
-                ),
-            }}
-        />
-        <Tabs.Screen
-            name="history"
-            options={{
-                title: 'Historial',
-                tabBarIcon: ({ color, size }) => (
-                    <Text style={{ fontSize: size }}>📋</Text>
-                ),
-            }}
-        />
-        <Tabs.Screen
             name="settings"
             options={{
                 title: 'Ajustes',
