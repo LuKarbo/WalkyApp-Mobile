@@ -9,9 +9,11 @@ import {
     View
 } from "react-native";
 
+import { ReviewsController } from "../../backend/Controllers/ReviewsController";
 import { WalksController } from "../../backend/Controllers/WalksController";
 import { useAuth } from "../../hooks/useAuth";
 
+import ViewReviewModal from "../../components/client/MyWalks/modals/ViewReviewModal";
 import WalkerWalksCard from "../../components/walker/WalkerWalks/components/WalkerWalksCard";
 import WalkerWalksHeader from "../../components/walker/WalkerWalks/components/WalkerWalksHeader";
 import WalkerWalksFilter from "../../components/walker/WalkerWalks/filters/WalkerWalksFilter";
@@ -30,6 +32,7 @@ const WalkerWalksScreen = () => {
     const [activeTab, setActiveTab] = useState("requests");
     const [searchQuery, setSearchQuery] = useState("");
 
+    // Estados de filtros avanzados
     const [selectedStatus, setSelectedStatus] = useState(null);
     const [sortBy, setSortBy] = useState('date-desc');
 
@@ -38,9 +41,12 @@ const WalkerWalksScreen = () => {
     const [showWaitingPaymentModal, setShowWaitingPaymentModal] = useState(false);
     const [showStartWalkModal, setShowStartWalkModal] = useState(false);
     const [showFinishWalkModal, setShowFinishWalkModal] = useState(false);
+    const [showViewReviewModal, setShowViewReviewModal] = useState(false);
 
     const [selectedWalk, setSelectedWalk] = useState(null);
     const [actionLoading, setActionLoading] = useState(false);
+    const [walkToViewReview, setWalkToViewReview] = useState(null);
+    const [currentReview, setCurrentReview] = useState(null);
 
     const MAX_ACCEPTED_WALKS = 5;
     const MAX_ACTIVE_WALKS = 2;
@@ -56,7 +62,31 @@ const WalkerWalksScreen = () => {
             setError(null);
 
             const walksData = await WalksController.fetchWalksByWalker(walkerId);
-            setAllWalks(walksData);
+            
+            // Cargar información de reviews para paseos finalizados
+            const walksWithReviews = await Promise.all(
+                walksData.map(async (walk) => {
+                    if (walk.status === 'Finalizado') {
+                        try {
+                            const review = await ReviewsController.fetchReviewByWalkId(walk.id);
+                            const hasValidReview = review && 
+                                                   typeof review === 'object' && 
+                                                   !Array.isArray(review) && 
+                                                   review.id;
+                            return { 
+                                ...walk, 
+                                hasReview: hasValidReview, 
+                                reviewId: hasValidReview ? review.id : null 
+                            };
+                        } catch (err) {
+                            return { ...walk, hasReview: false, reviewId: null };
+                        }
+                    }
+                    return walk;
+                })
+            );
+            
+            setAllWalks(walksWithReviews);
         } catch (err) {
             setError("Error loading walks: " + err.message);
         } finally {
@@ -94,9 +124,11 @@ const WalkerWalksScreen = () => {
         return activeCount < MAX_ACTIVE_WALKS;
     };
 
+    // Función para aplicar filtros y ordenamiento
     const applyFiltersAndSort = useCallback((walks) => {
         let filtered = [...walks];
 
+        // Filtro por tab (requests/active/history)
         filtered = filtered.filter(walk => {
             switch (activeTab) {
                 case "requests":
@@ -110,6 +142,7 @@ const WalkerWalksScreen = () => {
             }
         });
 
+        // Filtro por búsqueda
         if (searchQuery) {
             filtered = filtered.filter(walk =>
                 walk.dogName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -117,10 +150,12 @@ const WalkerWalksScreen = () => {
             );
         }
 
+        // Filtro por estado específico
         if (selectedStatus) {
             filtered = filtered.filter(walk => walk.status === selectedStatus);
         }
 
+        // Ordenamiento
         filtered.sort((a, b) => {
             switch (sortBy) {
                 case 'date-desc':
@@ -139,6 +174,7 @@ const WalkerWalksScreen = () => {
         return filtered;
     }, [activeTab, searchQuery, selectedStatus, sortBy]);
 
+    // Actualizar walks mostrados cuando cambian los filtros
     useEffect(() => {
         const filtered = applyFiltersAndSort(allWalks);
         setDisplayedWalks(filtered);
@@ -294,6 +330,32 @@ const WalkerWalksScreen = () => {
         Alert.alert('Ver Paseo', `Navegando a detalles del paseo ${walkId}`);
     };
 
+    const handleViewReview = async (walk) => {
+        try {
+            setWalkToViewReview(walk);
+            const review = await ReviewsController.fetchReviewByWalkId(walk.id);
+            const hasValidReview = review && 
+                                   typeof review === 'object' && 
+                                   !Array.isArray(review) && 
+                                   review.id;
+            if (hasValidReview) {
+                setCurrentReview(review);
+                setShowViewReviewModal(true);
+            } else {
+                Alert.alert('Info', 'Este paseo aún no tiene una reseña');
+            }
+        } catch (err) {
+            setError('Error loading review: ' + err.message);
+            Alert.alert('Error', 'No se pudo cargar la reseña');
+        }
+    };
+
+    const handleCloseViewReviewModal = () => {
+        setShowViewReviewModal(false);
+        setWalkToViewReview(null);
+        setCurrentReview(null);
+    };
+
     const handleCloseModals = () => {
         setShowAcceptModal(false);
         setShowRejectModal(false);
@@ -430,6 +492,7 @@ const WalkerWalksScreen = () => {
                                 onStartWalk={handleStartWalk}
                                 onViewWalk={handleViewWalk}
                                 onFinishWalk={handleFinishWalk}
+                                onViewReview={handleViewReview}
                                 canAcceptMore={canAcceptWalk()}
                                 canStartMore={canStartWalk()}
                             />
@@ -474,6 +537,13 @@ const WalkerWalksScreen = () => {
                 onConfirm={handleConfirmFinishWalk}
                 walkData={selectedWalk}
                 isLoading={actionLoading}
+            />
+
+            <ViewReviewModal 
+                visible={showViewReviewModal}
+                onClose={handleCloseViewReviewModal}
+                reviewData={currentReview}
+                tripData={walkToViewReview}
             />
         </View>
     );

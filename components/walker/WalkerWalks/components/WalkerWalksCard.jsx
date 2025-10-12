@@ -10,6 +10,7 @@ const WalkerWalksCard = ({
     onStartWalk,
     onViewWalk,
     onFinishWalk,
+    onViewReview,
     canAcceptMore = true,
     canStartMore = true,
 }) => {
@@ -199,6 +200,23 @@ const WalkerWalksCard = ({
                                 Ver Paseo
                             </Text>
                         </TouchableOpacity>
+
+                        {walk.hasReview && (
+                            <TouchableOpacity
+                                style={[styles.actionButton, styles.viewReviewButton]}
+                                onPress={() => onViewReview(walk)}
+                            >
+                                <Ionicons
+                                    name="star"
+                                    size={14}
+                                    color="#eab308"
+                                    style={styles.buttonIcon}
+                                />
+                                <Text style={[styles.actionButtonText, styles.viewReviewButtonText]}>
+                                    Ver Review
+                                </Text>
+                            </TouchableOpacity>
+                        )}
                     </View>
                 );
 
@@ -570,6 +588,13 @@ const styles = StyleSheet.create({
     finishButton: {
         backgroundColor: "#ef4444",
         borderColor: "#ef4444",
+    },
+    viewReviewButton: {
+        backgroundColor: "transparent",
+        borderColor: "#eab308",
+    },
+    viewReviewButtonText: {
+        color: "#eab308",
     },
     disabledButton: {
         backgroundColor: "#9ca3af",

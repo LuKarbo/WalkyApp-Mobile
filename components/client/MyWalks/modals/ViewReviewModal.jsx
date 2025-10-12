@@ -25,7 +25,7 @@ export default function ViewReviewModal({ visible, onClose, reviewData, tripData
             </View>
         );
     };
-
+    
     return (
         <Modal
             visible={visible}
@@ -49,7 +49,7 @@ export default function ViewReviewModal({ visible, onClose, reviewData, tripData
                         <View style={styles.headerText}>
                             <Text style={styles.title}>Tu Reseña</Text>
                             <Text style={styles.subtitle}>
-                                Paseo con {tripData?.walker}
+                                Paseo con &quot;{reviewData?.walkerName}&quot;
                             </Text>
                         </View>
                     </View>
@@ -67,7 +67,7 @@ export default function ViewReviewModal({ visible, onClose, reviewData, tripData
                             </View>
 
                             <View style={styles.contentCard}>
-                                <Text style={styles.contentLabel}>Tu comentario</Text>
+                                <Text style={styles.contentLabel}>Comentario</Text>
                                 <Text style={styles.contentText}>{reviewData.content}</Text>
                             </View>
 
