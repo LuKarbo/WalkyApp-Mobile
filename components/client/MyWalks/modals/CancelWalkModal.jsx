@@ -26,6 +26,8 @@ export default function CancelWalkModal({ visible, onClose, onConfirm, tripData,
                 return '#6b7280';
             case "Rechazado":
                 return '#ef4444';
+            case "Cancelado":
+                return '#ef4444';
             default:
                 return '#9ca3af';
         }
@@ -45,6 +47,8 @@ export default function CancelWalkModal({ visible, onClose, onConfirm, tripData,
                 return "Finalizado";
             case "Rechazado":
                 return "Rechazado";
+            case "Cancelado":
+                return "Cancelado";
             default:
                 return status;
         }

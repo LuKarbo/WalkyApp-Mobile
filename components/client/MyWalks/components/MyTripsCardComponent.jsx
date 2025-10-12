@@ -64,7 +64,7 @@ export default function MyTripsCardComponent({ trip, onViewTrip, onCancelTrip, o
         return status === "Esperando pago";
     };
 
-    const viewTrip = (status) => {
+    const canViewTrip = (status) => {
         return ["Agendado", "Activo", "Finalizado"].includes(status);
     };
 
@@ -83,7 +83,7 @@ export default function MyTripsCardComponent({ trip, onViewTrip, onCancelTrip, o
                     </View>
                     <View style={styles.headerInfo}>
                         <Text style={styles.dogName}>{trip.dogName}</Text>
-                        <Text style={styles.walker}>📍 {trip.walker}</Text>
+                        <Text style={styles.walker}>🚶 {trip.walker}</Text>
                     </View>
                 </View>
                 <View style={[styles.statusBadge, { backgroundColor: getStatusColor(trip.status) }]}>
@@ -137,7 +137,7 @@ export default function MyTripsCardComponent({ trip, onViewTrip, onCancelTrip, o
             </View>
 
             <View style={styles.cardActions}>
-                {viewTrip(trip.status) && (
+                {canViewTrip(trip.status) && (
                     <TouchableOpacity
                         onPress={() => onViewTrip(trip.id)}
                         style={[styles.button, styles.viewButton]}

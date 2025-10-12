@@ -39,6 +39,15 @@ export default function WalkerLayout() {
             }}
         />
         <Tabs.Screen
+            name="service"
+            options={{
+                title: 'Mi servicio',
+                tabBarIcon: ({ color, size }) => (
+                    <Text style={{ fontSize: size }}>📜</Text>
+                ),
+            }}
+        />
+        <Tabs.Screen
             name="settings"
             options={{
                 title: 'Ajustes',

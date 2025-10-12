@@ -97,7 +97,20 @@ export default function WalkSchedule({
             onSuccess();
 
         } catch (error) {
-            showError('No se pudo enviar la solicitud');
+            console.log(error);
+            
+            let errorMessage = 'No se pudo enviar la solicitud';
+            
+            if (error.message) {
+                const match = error.message.match(/Error en base de datos: (.+)/);
+                if (match && match[1]) {
+                    errorMessage = match[1];
+                } else {
+                    errorMessage = error.message;
+                }
+            }
+            
+            showError(errorMessage);
         } finally {
             setSubmitting(false);
         }

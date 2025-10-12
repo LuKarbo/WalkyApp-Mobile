@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
+    ActivityIndicator,
     Alert,
     FlatList,
     StyleSheet,
@@ -18,17 +19,28 @@ import ViewReviewModal from '../../components/client/MyWalks/modals/ViewReviewMo
 import LoadingScreen from '../../components/common/LoadingScreen';
 import { useAuth } from '../../hooks/useAuth';
 
+const ITEMS_PER_PAGE = 10;
+
 export default function ClientWalksScreen() {
     const { user } = useAuth();
     const userId = user?.id;
 
-    const [trips, setTrips] = useState([]);
+    const [allTrips, setAllTrips] = useState([]);
+    const [displayedTrips, setDisplayedTrips] = useState([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
+    const [loadingMore, setLoadingMore] = useState(false);
     const [error, setError] = useState(null);
+    
     const [activeTab, setActiveTab] = useState("active");
     const [searchQuery, setSearchQuery] = useState("");
-    const [showCreateForm, setShowCreateForm] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [hasMoreData, setHasMoreData] = useState(true);
+
+    // Estados de filtros avanzados
+    const [selectedStatus, setSelectedStatus] = useState(null);
+    const [dateRange, setDateRange] = useState({ start: null, end: null });
+    const [sortBy, setSortBy] = useState('date-desc'); // date-desc, date-asc, price-desc, price-asc
 
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [tripToCancel, setTripToCancel] = useState(null);
@@ -77,7 +89,9 @@ export default function ClientWalksScreen() {
                 })
             );
             
-            setTrips(tripsWithReviews);
+            setAllTrips(tripsWithReviews);
+            setCurrentPage(1);
+            setHasMoreData(true);
         } catch (err) {
             setError('Error loading trips: ' + err.message);
             console.error('Error loading trips:', err);
@@ -91,9 +105,86 @@ export default function ClientWalksScreen() {
         loadTrips();
     }, [userId]);
 
+    // Función para aplicar filtros y ordenamiento
+    const applyFiltersAndSort = useCallback((trips) => {
+        let filtered = [...trips];
+
+        // Filtro por tab (activo/historial)
+        filtered = filtered.filter(trip => {
+            if (activeTab === "active") {
+                return ["Solicitado", "Esperando pago", "Agendado", "Activo"].includes(trip.status);
+            } else {
+                return ["Cancelado", "Rechazado", "Finalizado"].includes(trip.status);
+            }
+        });
+
+        // Filtro por búsqueda
+        if (searchQuery) {
+            filtered = filtered.filter(trip => 
+                trip.dogName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                trip.walkerName?.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+        }
+
+        // Filtro por estado específico
+        if (selectedStatus) {
+            filtered = filtered.filter(trip => trip.status === selectedStatus);
+        }
+
+        // Filtro por rango de fechas
+        if (dateRange.start && dateRange.end) {
+            filtered = filtered.filter(trip => {
+                const tripDate = new Date(trip.startTime);
+                return tripDate >= dateRange.start && tripDate <= dateRange.end;
+            });
+        }
+
+        // Ordenamiento
+        filtered.sort((a, b) => {
+            switch (sortBy) {
+                case 'date-desc':
+                    return new Date(b.startTime) - new Date(a.startTime);
+                case 'date-asc':
+                    return new Date(a.startTime) - new Date(b.startTime);
+                case 'price-desc':
+                    return (b.totalPrice || 0) - (a.totalPrice || 0);
+                case 'price-asc':
+                    return (a.totalPrice || 0) - (b.totalPrice || 0);
+                default:
+                    return 0;
+            }
+        });
+
+        return filtered;
+    }, [activeTab, searchQuery, selectedStatus, dateRange, sortBy]);
+
+    // Actualizar trips mostrados cuando cambian los filtros
+    useEffect(() => {
+        const filtered = applyFiltersAndSort(allTrips);
+        const paginated = filtered.slice(0, currentPage * ITEMS_PER_PAGE);
+        setDisplayedTrips(paginated);
+        setHasMoreData(paginated.length < filtered.length);
+    }, [allTrips, currentPage, applyFiltersAndSort]);
+
+    // Reset page cuando cambian filtros
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [activeTab, searchQuery, selectedStatus, dateRange, sortBy]);
+
     const onRefresh = () => {
         setRefreshing(true);
+        setCurrentPage(1);
         loadTrips();
+    };
+
+    const loadMoreTrips = () => {
+        if (!loadingMore && hasMoreData) {
+            setLoadingMore(true);
+            setTimeout(() => {
+                setCurrentPage(prev => prev + 1);
+                setLoadingMore(false);
+            }, 500);
+        }
     };
 
     const handleCancelTrip = (trip) => {
@@ -106,12 +197,14 @@ export default function ClientWalksScreen() {
         
         try {
             setCancelLoading(true);
-            await WalksController.changeWalkStatus(tripToCancel.id, 'Rechazado');
-            setTrips(trips.map(trip => 
+            await WalksController.changeWalkStatus(tripToCancel.id, 'Cancelado');
+            
+            setAllTrips(trips => trips.map(trip => 
                 trip.id === tripToCancel.id 
-                    ? { ...trip, status: 'Rechazado' }
+                    ? { ...trip, status: 'Cancelado' }
                     : trip
             ));
+            
             setShowCancelModal(false);
             setTripToCancel(null);
         } catch (err) {
@@ -138,11 +231,13 @@ export default function ClientWalksScreen() {
         try {
             setPaymentLoading(true);
             await WalksController.changeWalkStatus(tripToPay.id, 'Agendado');
-            setTrips(trips.map(trip => 
+            
+            setAllTrips(trips => trips.map(trip => 
                 trip.id === tripToPay.id 
                     ? { ...trip, status: 'Agendado' }
                     : trip
             ));
+            
             setShowPaymentModal(false);
             setTripToPay(null);
         } catch (err) {
@@ -180,7 +275,7 @@ export default function ClientWalksScreen() {
                 content: reviewData.content
             });
             
-            setTrips(trips.map(trip => 
+            setAllTrips(trips => trips.map(trip => 
                 trip.id === tripToReview.id 
                     ? { ...trip, hasReview: true }
                     : trip
@@ -232,22 +327,11 @@ export default function ClientWalksScreen() {
         Alert.alert('Ver Paseo', `Navegando a detalles del paseo ${tripId}`);
     };
 
-    const filteredTrips = trips.filter((trip) => {
-        const isActive = activeTab === "active" ?
-            ["Solicitado", "Esperando pago", "Agendado", "Activo"].includes(trip.status) :
-            ["Cancelado", "Rechazado", "Finalizado"].includes(trip.status);
-
-        const matchesSearch = trip.dogName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                                trip.walker?.toLowerCase().includes(searchQuery.toLowerCase());
-
-        return isActive && matchesSearch;
-    });
-
-    const activeTripsCount = trips.filter(trip => 
+    const activeTripsCount = allTrips.filter(trip => 
         ["Solicitado", "Esperando pago", "Agendado", "Activo"].includes(trip.status)
     ).length;
 
-    const completedTripsCount = trips.filter(trip => 
+    const completedTripsCount = allTrips.filter(trip => 
         ["Cancelado", "Rechazado", "Finalizado"].includes(trip.status)
     ).length;
 
@@ -265,6 +349,16 @@ export default function ClientWalksScreen() {
         </View>
     );
 
+    const renderFooter = () => {
+        if (!loadingMore) return null;
+        return (
+            <View style={styles.footerLoader}>
+                <ActivityIndicator size="small" color="#3b82f6" />
+                <Text style={styles.footerText}>Cargando más paseos...</Text>
+            </View>
+        );
+    };
+
     if (loading) {
         return <LoadingScreen message="Cargando paseos..." />;
     }
@@ -274,7 +368,6 @@ export default function ClientWalksScreen() {
             <MyTripsHeaderComponent 
                 activeTab={activeTab}
                 setActiveTab={setActiveTab}
-                setShowCreateForm={setShowCreateForm}
                 activeTripsCount={activeTripsCount}
                 completedTripsCount={completedTripsCount}
                 onRefresh={onRefresh}
@@ -284,10 +377,15 @@ export default function ClientWalksScreen() {
             <MyTripsFilter 
                 searchQuery={searchQuery}
                 setSearchQuery={setSearchQuery}
+                selectedStatus={selectedStatus}
+                setSelectedStatus={setSelectedStatus}
+                sortBy={sortBy}
+                setSortBy={setSortBy}
+                activeTab={activeTab}
             />
 
             <FlatList
-                data={filteredTrips}
+                data={displayedTrips}
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={({ item }) => (
                     <MyTripsCardComponent 
@@ -301,6 +399,11 @@ export default function ClientWalksScreen() {
                 )}
                 contentContainerStyle={styles.listContainer}
                 ListEmptyComponent={renderEmptyState}
+                ListFooterComponent={renderFooter}
+                onEndReached={loadMoreTrips}
+                onEndReachedThreshold={0.5}
+                refreshing={refreshing}
+                onRefresh={onRefresh}
             />
 
             <CancelWalkModal 
@@ -366,5 +469,14 @@ const styles = StyleSheet.create({
         color: '#6b7280',
         textAlign: 'center',
         paddingHorizontal: 32,
+    },
+    footerLoader: {
+        paddingVertical: 20,
+        alignItems: 'center',
+        gap: 8,
+    },
+    footerText: {
+        fontSize: 12,
+        color: '#6b7280',
     },
 });

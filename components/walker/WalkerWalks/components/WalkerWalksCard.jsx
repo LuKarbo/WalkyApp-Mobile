@@ -66,123 +66,142 @@ const WalkerWalksCard = ({
         switch (walk.status) {
             case "Solicitado":
                 return (
-                <View style={styles.actionsContainer}>
-                    <TouchableOpacity
-                    style={[
-                        styles.actionButton,
-                        styles.acceptButton,
-                        !canAcceptMore && styles.disabledButton,
-                    ]}
-                    onPress={() => canAcceptMore && onAcceptWalk(walk)}
-                    disabled={!canAcceptMore}
-                    >
-                    <Ionicons
-                        name="checkmark"
-                        size={14}
-                        color="#ffffff"
-                        style={styles.buttonIcon}
-                    />
-                    <Text style={styles.actionButtonText}>
-                        {canAcceptMore ? "Aceptar" : "Límite"}
-                    </Text>
-                    </TouchableOpacity>
+                    <View style={styles.actionsContainer}>
+                        <TouchableOpacity
+                            style={[
+                                styles.actionButton,
+                                styles.acceptButton,
+                                !canAcceptMore && styles.disabledButton,
+                            ]}
+                            onPress={() => canAcceptMore && onAcceptWalk(walk)}
+                            disabled={!canAcceptMore}
+                        >
+                            <Ionicons
+                                name="checkmark"
+                                size={14}
+                                color="#ffffff"
+                                style={styles.buttonIcon}
+                            />
+                            <Text style={styles.actionButtonText}>
+                                {canAcceptMore ? "Aceptar" : "Límite"}
+                            </Text>
+                        </TouchableOpacity>
 
-                    <TouchableOpacity
-                    style={[styles.actionButton, styles.rejectButton]}
-                    onPress={() => onRejectWalk(walk)}
-                    >
-                    <Ionicons
-                        name="close"
-                        size={14}
-                        color="#ef4444"
-                        style={styles.buttonIcon}
-                    />
-                    <Text style={[styles.actionButtonText, styles.rejectButtonText]}>
-                        Rechazar
-                    </Text>
-                    </TouchableOpacity>
-                </View>
+                        <TouchableOpacity
+                            style={[styles.actionButton, styles.rejectButton]}
+                            onPress={() => onRejectWalk(walk)}
+                        >
+                            <Ionicons
+                                name="close"
+                                size={14}
+                                color="#ef4444"
+                                style={styles.buttonIcon}
+                            />
+                            <Text style={[styles.actionButtonText, styles.rejectButtonText]}>
+                                Rechazar
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
                 );
 
             case "Esperando pago":
                 return (
-                <View style={styles.actionsContainer}>
-                    <TouchableOpacity
-                    style={[styles.actionButton, styles.infoButton]}
-                    onPress={() => onShowWaitingPayment(walk)}
-                    >
-                    <Ionicons
-                        name="information-circle-outline"
-                        size={14}
-                        color="#3b82f6"
-                        style={styles.buttonIcon}
-                    />
-                    <Text style={[styles.actionButtonText, styles.infoButtonText]}>
-                        Info
-                    </Text>
-                    </TouchableOpacity>
-                </View>
+                    <View style={styles.actionsContainer}>
+                        <TouchableOpacity
+                            style={[styles.actionButton, styles.infoButton]}
+                            onPress={() => onShowWaitingPayment(walk)}
+                        >
+                            <Ionicons
+                                name="information-circle-outline"
+                                size={14}
+                                color="#3b82f6"
+                                style={styles.buttonIcon}
+                            />
+                            <Text style={[styles.actionButtonText, styles.infoButtonText]}>
+                                Info
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
                 );
 
             case "Agendado":
                 return (
-                <View style={styles.actionsContainer}>
-                    <TouchableOpacity
-                    style={[
-                        styles.actionButton,
-                        styles.startButton,
-                        !canStartMore && styles.disabledButton,
-                    ]}
-                    onPress={() => canStartMore && onStartWalk(walk)}
-                    disabled={!canStartMore}
-                    >
-                    <Ionicons
-                        name="play"
-                        size={14}
-                        color="#ffffff"
-                        style={styles.buttonIcon}
-                    />
-                    <Text style={styles.actionButtonText}>
-                        {canStartMore ? "Iniciar Paseo" : "Límite Activos"}
-                    </Text>
-                    </TouchableOpacity>
-                </View>
+                    <View style={styles.actionsContainer}>
+                        <TouchableOpacity
+                            style={[
+                                styles.actionButton,
+                                styles.startButton,
+                                !canStartMore && styles.disabledButton,
+                            ]}
+                            onPress={() => canStartMore && onStartWalk(walk)}
+                            disabled={!canStartMore}
+                        >
+                            <Ionicons
+                                name="play"
+                                size={14}
+                                color="#ffffff"
+                                style={styles.buttonIcon}
+                            />
+                            <Text style={styles.actionButtonText}>
+                                {canStartMore ? "Iniciar Paseo" : "Límite Activos"}
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
                 );
 
             case "Activo":
                 return (
-                <View style={styles.actionsContainer}>
-                    <TouchableOpacity
-                    style={[styles.actionButton, styles.viewButton]}
-                    onPress={() => onViewWalk(walk.id)}
-                    >
-                    <Ionicons
-                        name="eye-outline"
-                        size={14}
-                        color="#10b981"
-                        style={styles.buttonIcon}
-                    />
-                    <Text style={[styles.actionButtonText, styles.viewButtonText]}>
-                        Ver Paseo
-                    </Text>
-                    </TouchableOpacity>
+                    <View style={styles.actionsContainer}>
+                        <TouchableOpacity
+                            style={[styles.actionButton, styles.viewButton]}
+                            onPress={() => onViewWalk(walk.id)}
+                        >
+                            <Ionicons
+                                name="eye-outline"
+                                size={14}
+                                color="#10b981"
+                                style={styles.buttonIcon}
+                            />
+                            <Text style={[styles.actionButtonText, styles.viewButtonText]}>
+                                Ver Paseo
+                            </Text>
+                        </TouchableOpacity>
 
-                    <TouchableOpacity
-                    style={[styles.actionButton, styles.finishButton]}
-                    onPress={() => onFinishWalk(walk)}
-                    >
-                    <Ionicons
-                        name="checkmark-circle-outline"
-                        size={14}
-                        color="#ffffff"
-                        style={styles.buttonIcon}
-                    />
-                    <Text style={styles.actionButtonText}>Finalizar</Text>
-                    </TouchableOpacity>
-                </View>
+                        <TouchableOpacity
+                            style={[styles.actionButton, styles.finishButton]}
+                            onPress={() => onFinishWalk(walk)}
+                        >
+                            <Ionicons
+                                name="checkmark-circle-outline"
+                                size={14}
+                                color="#ffffff"
+                                style={styles.buttonIcon}
+                            />
+                            <Text style={styles.actionButtonText}>Finalizar</Text>
+                        </TouchableOpacity>
+                    </View>
                 );
 
             case "Finalizado":
+                return (
+                    <View style={styles.actionsContainer}>
+                        <TouchableOpacity
+                            style={[styles.actionButton, styles.viewButton]}
+                            onPress={() => onViewWalk(walk.id)}
+                        >
+                            <Ionicons
+                                name="eye-outline"
+                                size={14}
+                                color="#10b981"
+                                style={styles.buttonIcon}
+                            />
+                            <Text style={[styles.actionButtonText, styles.viewButtonText]}>
+                                Ver Paseo
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                );
+
             case "Rechazado":
             case "Cancelado":
             default:
@@ -195,152 +214,152 @@ const WalkerWalksCard = ({
 
     return (
         <View
-        style={[
-            styles.card,
-            isLimitReached && styles.cardDisabled,
-        ]}
+            style={[
+                styles.card,
+                isLimitReached && styles.cardDisabled,
+            ]}
         >
-        <View style={styles.statusBadge}>
-            <Text
-            style={[
-                styles.statusText,
-                { backgroundColor: getStatusColor(walk.status) },
-            ]}
-            >
-            {getStatusText(walk.status)}
-            </Text>
-        </View>
-
-        {isLimitReached && (
-            <View style={styles.limitBadge}>
-            <Text style={styles.limitBadgeText}>Límite</Text>
-            </View>
-        )}
-
-        <View style={styles.header}>
-            <View
-            style={[
-                styles.avatar,
-                { backgroundColor: getStatusColor(walk.status) },
-            ]}
-            >
-            <Text style={styles.avatarText}>
-                {walk.dogName?.[0] || "P"}
-            </Text>
-            </View>
-            <View style={styles.headerInfo}>
-            <Text
-                style={[
-                styles.dogName,
-                isLimitReached && styles.dogNameDisabled,
-                ]}
-                numberOfLines={1}
-            >
-                {walk.dogName}
-            </Text>
-            <View style={styles.subtitleRow}>
-                <Ionicons name="location-outline" size={12} color="#6b7280" />
-                <Text style={styles.subtitle} numberOfLines={1}>
-                Solicitud de paseo
+            <View style={styles.statusBadge}>
+                <Text
+                    style={[
+                        styles.statusText,
+                        { backgroundColor: getStatusColor(walk.status) },
+                    ]}
+                >
+                    {getStatusText(walk.status)}
                 </Text>
             </View>
-            </View>
-        </View>
 
-        <View style={styles.details}>
-            <View style={styles.detailItem}>
-            <Ionicons
-                name="calendar-outline"
-                size={14}
-                color="#10b981"
-                style={styles.detailIcon}
-            />
-            <Text style={styles.detailText} numberOfLines={1}>
-                {format(new Date(walk.startTime), "MMM dd, yyyy")}
-            </Text>
-            </View>
-
-            <View style={styles.detailItem}>
-            <Ionicons
-                name="time-outline"
-                size={14}
-                color="#3b82f6"
-                style={styles.detailIcon}
-            />
-            <Text style={styles.detailText} numberOfLines={1}>
-                {format(new Date(walk.startTime), "h:mm a")}
-                {walk.endTime && ` - ${format(new Date(walk.endTime), "h:mm a")}`}
-            </Text>
-            </View>
-
-            {(walk.duration || walk.distance) && (
-            <View style={styles.detailItem}>
-                <Ionicons
-                name="map-outline"
-                size={14}
-                color="#06b6d4"
-                style={styles.detailIcon}
-                />
-                <Text style={styles.detailText} numberOfLines={1}>
-                {walk.duration && `${walk.duration} min`}
-                {walk.duration && walk.distance && " • "}
-                {walk.distance && formatDistance(walk.distance)}
-                </Text>
-            </View>
+            {isLimitReached && (
+                <View style={styles.limitBadge}>
+                    <Text style={styles.limitBadgeText}>Límite</Text>
+                </View>
             )}
 
-            {walk.notes && (
-            <View style={styles.notesContainer}>
-                <Text style={styles.notesText} numberOfLines={2}>
-                &quot;{walk.notes}&quot;
-                </Text>
+            <View style={styles.header}>
+                <View
+                    style={[
+                        styles.avatar,
+                        { backgroundColor: getStatusColor(walk.status) },
+                    ]}
+                >
+                    <Text style={styles.avatarText}>
+                        {walk.dogName?.[0] || "P"}
+                    </Text>
+                </View>
+                <View style={styles.headerInfo}>
+                    <Text
+                        style={[
+                            styles.dogName,
+                            isLimitReached && styles.dogNameDisabled,
+                        ]}
+                        numberOfLines={1}
+                    >
+                        {walk.dogName}
+                    </Text>
+                    <View style={styles.subtitleRow}>
+                        <Ionicons name="location-outline" size={12} color="#6b7280" />
+                        <Text style={styles.subtitle} numberOfLines={1}>
+                            Solicitud de paseo
+                        </Text>
+                    </View>
+                </View>
             </View>
-            )}
 
-            {walk.status === "Esperando pago" && (
-            <View style={styles.waitingPaymentBadge}>
-                <Ionicons
-                name="information-circle-outline"
-                size={14}
-                color="#f97316"
-                style={styles.detailIcon}
-                />
-                <Text style={styles.waitingPaymentText} numberOfLines={1}>
-                Cliente notificado - Esperando pago
-                </Text>
+            <View style={styles.details}>
+                <View style={styles.detailItem}>
+                    <Ionicons
+                        name="calendar-outline"
+                        size={14}
+                        color="#10b981"
+                        style={styles.detailIcon}
+                    />
+                    <Text style={styles.detailText} numberOfLines={1}>
+                        {format(new Date(walk.startTime), "MMM dd, yyyy")}
+                    </Text>
+                </View>
+
+                <View style={styles.detailItem}>
+                    <Ionicons
+                        name="time-outline"
+                        size={14}
+                        color="#3b82f6"
+                        style={styles.detailIcon}
+                    />
+                    <Text style={styles.detailText} numberOfLines={1}>
+                        {format(new Date(walk.startTime), "h:mm a")}
+                        {walk.endTime && ` - ${format(new Date(walk.endTime), "h:mm a")}`}
+                    </Text>
+                </View>
+
+                {(walk.duration || walk.distance) && (
+                    <View style={styles.detailItem}>
+                        <Ionicons
+                            name="map-outline"
+                            size={14}
+                            color="#06b6d4"
+                            style={styles.detailIcon}
+                        />
+                        <Text style={styles.detailText} numberOfLines={1}>
+                            {walk.duration && `${walk.duration} min`}
+                            {walk.duration && walk.distance && " • "}
+                            {walk.distance && formatDistance(walk.distance)}
+                        </Text>
+                    </View>
+                )}
+
+                {walk.notes && (
+                    <View style={styles.notesContainer}>
+                        <Text style={styles.notesText} numberOfLines={2}>
+                            &quot;{walk.notes}&quot;
+                        </Text>
+                    </View>
+                )}
+
+                {walk.status === "Esperando pago" && (
+                    <View style={styles.waitingPaymentBadge}>
+                        <Ionicons
+                            name="information-circle-outline"
+                            size={14}
+                            color="#f97316"
+                            style={styles.detailIcon}
+                        />
+                        <Text style={styles.waitingPaymentText} numberOfLines={1}>
+                            Cliente notificado - Esperando pago
+                        </Text>
+                    </View>
+                )}
+
+                {!canAcceptMore && walk.status === "Solicitado" && (
+                    <View style={styles.limitWarning}>
+                        <Ionicons
+                            name="information-circle-outline"
+                            size={14}
+                            color="#ef4444"
+                            style={styles.detailIcon}
+                        />
+                        <Text style={styles.limitWarningText} numberOfLines={1}>
+                            Límite de 5 paseos aceptados alcanzado
+                        </Text>
+                    </View>
+                )}
+
+                {!canStartMore && walk.status === "Agendado" && (
+                    <View style={styles.limitWarning}>
+                        <Ionicons
+                            name="information-circle-outline"
+                            size={14}
+                            color="#ef4444"
+                            style={styles.detailIcon}
+                        />
+                        <Text style={styles.limitWarningText} numberOfLines={1}>
+                            Límite de 2 paseos activos alcanzado
+                        </Text>
+                    </View>
+                )}
             </View>
-            )}
 
-            {!canAcceptMore && walk.status === "Solicitado" && (
-            <View style={styles.limitWarning}>
-                <Ionicons
-                name="information-circle-outline"
-                size={14}
-                color="#ef4444"
-                style={styles.detailIcon}
-                />
-                <Text style={styles.limitWarningText} numberOfLines={1}>
-                Límite de 5 paseos aceptados alcanzado
-                </Text>
-            </View>
-            )}
-
-            {!canStartMore && walk.status === "Agendado" && (
-            <View style={styles.limitWarning}>
-                <Ionicons
-                name="information-circle-outline"
-                size={14}
-                color="#ef4444"
-                style={styles.detailIcon}
-                />
-                <Text style={styles.limitWarningText} numberOfLines={1}>
-                Límite de 2 paseos activos alcanzado
-                </Text>
-            </View>
-            )}
-        </View>
-
-        {renderActionButtons()}
+            {renderActionButtons()}
         </View>
     );
 };
@@ -517,6 +536,7 @@ const styles = StyleSheet.create({
     actionButtonText: {
         fontSize: 12,
         fontWeight: "700",
+        color: "#ffffff",
     },
     acceptButton: {
         backgroundColor: "#10b981",

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
     ActivityIndicator,
     Alert,
@@ -21,13 +21,17 @@ import RejectWalkModal from "../../components/walker/WalkerWalks/modals/RejectWa
 import StartWalkModal from "../../components/walker/WalkerWalks/modals/StartWalkModal";
 import WaitingPaymentModal from "../../components/walker/WalkerWalks/modals/WaitingPaymentModal";
 
-    const WalkerWalksScreen = () => {
-    const [walks, setWalks] = useState([]);
+const WalkerWalksScreen = () => {
+    const [allWalks, setAllWalks] = useState([]);
+    const [displayedWalks, setDisplayedWalks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState(null);
     const [activeTab, setActiveTab] = useState("requests");
     const [searchQuery, setSearchQuery] = useState("");
+
+    const [selectedStatus, setSelectedStatus] = useState(null);
+    const [sortBy, setSortBy] = useState('date-desc');
 
     const [showAcceptModal, setShowAcceptModal] = useState(false);
     const [showRejectModal, setShowRejectModal] = useState(false);
@@ -48,15 +52,15 @@ import WaitingPaymentModal from "../../components/walker/WalkerWalks/modals/Wait
         if (!walkerId) return;
 
         try {
-        setLoading(true);
-        setError(null);
+            setLoading(true);
+            setError(null);
 
-        const walksData = await WalksController.fetchWalksByWalker(walkerId);
-        setWalks(walksData);
+            const walksData = await WalksController.fetchWalksByWalker(walkerId);
+            setAllWalks(walksData);
         } catch (err) {
-        setError("Error loading walks: " + err.message);
+            setError("Error loading walks: " + err.message);
         } finally {
-        setLoading(false);
+            setLoading(false);
         }
     };
 
@@ -71,13 +75,13 @@ import WaitingPaymentModal from "../../components/walker/WalkerWalks/modals/Wait
     };
 
     const countAcceptedWalks = () => {
-        return walks.filter((walk) =>
-        ["Esperando pago", "Agendado"].includes(walk.status)
+        return allWalks.filter((walk) =>
+            ["Esperando pago", "Agendado"].includes(walk.status)
         ).length;
     };
 
     const countActiveWalks = () => {
-        return walks.filter((walk) => walk.status === "Activo").length;
+        return allWalks.filter((walk) => walk.status === "Activo").length;
     };
 
     const canAcceptWalk = () => {
@@ -90,12 +94,62 @@ import WaitingPaymentModal from "../../components/walker/WalkerWalks/modals/Wait
         return activeCount < MAX_ACTIVE_WALKS;
     };
 
+    const applyFiltersAndSort = useCallback((walks) => {
+        let filtered = [...walks];
+
+        filtered = filtered.filter(walk => {
+            switch (activeTab) {
+                case "requests":
+                    return ["Solicitado", "Esperando pago", "Agendado"].includes(walk.status);
+                case "active":
+                    return walk.status === "Activo";
+                case "history":
+                    return ["Cancelado", "Finalizado", "Rechazado"].includes(walk.status);
+                default:
+                    return false;
+            }
+        });
+
+        if (searchQuery) {
+            filtered = filtered.filter(walk =>
+                walk.dogName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                walk.notes?.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+        }
+
+        if (selectedStatus) {
+            filtered = filtered.filter(walk => walk.status === selectedStatus);
+        }
+
+        filtered.sort((a, b) => {
+            switch (sortBy) {
+                case 'date-desc':
+                    return new Date(b.startTime) - new Date(a.startTime);
+                case 'date-asc':
+                    return new Date(a.startTime) - new Date(b.startTime);
+                case 'price-desc':
+                    return (b.totalPrice || 0) - (a.totalPrice || 0);
+                case 'price-asc':
+                    return (a.totalPrice || 0) - (b.totalPrice || 0);
+                default:
+                    return 0;
+            }
+        });
+
+        return filtered;
+    }, [activeTab, searchQuery, selectedStatus, sortBy]);
+
+    useEffect(() => {
+        const filtered = applyFiltersAndSort(allWalks);
+        setDisplayedWalks(filtered);
+    }, [allWalks, applyFiltersAndSort]);
+
     const handleAcceptWalk = (walk) => {
         if (!canAcceptWalk()) {
-        setError(
-            `No puedes aceptar más paseos. Límite máximo: ${MAX_ACCEPTED_WALKS} paseos aceptados simultáneamente.`
-        );
-        return;
+            setError(
+                `No puedes aceptar más paseos. Límite máximo: ${MAX_ACCEPTED_WALKS} paseos aceptados simultáneamente.`
+            );
+            return;
         }
 
         setSelectedWalk(walk);
@@ -106,30 +160,30 @@ import WaitingPaymentModal from "../../components/walker/WalkerWalks/modals/Wait
         if (!selectedWalk) return;
 
         if (!canAcceptWalk()) {
-        setError(
-            `No puedes aceptar más paseos. Límite máximo: ${MAX_ACCEPTED_WALKS} paseos aceptados simultáneamente.`
-        );
-        setShowAcceptModal(false);
-        setSelectedWalk(null);
-        return;
+            setError(
+                `No puedes aceptar más paseos. Límite máximo: ${MAX_ACCEPTED_WALKS} paseos aceptados simultáneamente.`
+            );
+            setShowAcceptModal(false);
+            setSelectedWalk(null);
+            return;
         }
 
         try {
-        setActionLoading(true);
-        await WalksController.acceptWalkRequest(selectedWalk.id);
-        setWalks(
-            walks.map((walk) =>
-            walk.id === selectedWalk.id
-                ? { ...walk, status: "Esperando pago" }
-                : walk
-            )
-        );
-        setShowAcceptModal(false);
-        setSelectedWalk(null);
+            setActionLoading(true);
+            await WalksController.acceptWalkRequest(selectedWalk.id);
+            setAllWalks(
+                allWalks.map((walk) =>
+                    walk.id === selectedWalk.id
+                        ? { ...walk, status: "Esperando pago" }
+                        : walk
+                )
+            );
+            setShowAcceptModal(false);
+            setSelectedWalk(null);
         } catch (err) {
-        setError("Error accepting walk: " + err.message);
+            setError("Error accepting walk: " + err.message);
         } finally {
-        setActionLoading(false);
+            setActionLoading(false);
         }
     };
 
@@ -142,19 +196,19 @@ import WaitingPaymentModal from "../../components/walker/WalkerWalks/modals/Wait
         if (!selectedWalk) return;
 
         try {
-        setActionLoading(true);
-        await WalksController.rejectWalkRequest(selectedWalk.id);
-        setWalks(
-            walks.map((walk) =>
-            walk.id === selectedWalk.id ? { ...walk, status: "Rechazado" } : walk
-            )
-        );
-        setShowRejectModal(false);
-        setSelectedWalk(null);
+            setActionLoading(true);
+            await WalksController.rejectWalkRequest(selectedWalk.id);
+            setAllWalks(
+                allWalks.map((walk) =>
+                    walk.id === selectedWalk.id ? { ...walk, status: "Rechazado" } : walk
+                )
+            );
+            setShowRejectModal(false);
+            setSelectedWalk(null);
         } catch (err) {
-        setError("Error rejecting walk: " + err.message);
+            setError("Error rejecting walk: " + err.message);
         } finally {
-        setActionLoading(false);
+            setActionLoading(false);
         }
     };
 
@@ -167,26 +221,26 @@ import WaitingPaymentModal from "../../components/walker/WalkerWalks/modals/Wait
         if (!selectedWalk) return;
 
         if (selectedWalk.status !== "Activo") {
-        setError("Solo los paseos activos pueden finalizarse.");
-        return;
+            setError("Solo los paseos activos pueden finalizarse.");
+            return;
         }
 
         try {
-        setActionLoading(true);
-        await WalksController.finishWalk(selectedWalk.id);
-        setWalks(
-            walks.map((walk) =>
-            walk.id === selectedWalk.id
-                ? { ...walk, status: "Finalizado" }
-                : walk
-            )
-        );
-        setShowFinishWalkModal(false);
-        setSelectedWalk(null);
+            setActionLoading(true);
+            await WalksController.finishWalk(selectedWalk.id);
+            setAllWalks(
+                allWalks.map((walk) =>
+                    walk.id === selectedWalk.id
+                        ? { ...walk, status: "Finalizado" }
+                        : walk
+                )
+            );
+            setShowFinishWalkModal(false);
+            setSelectedWalk(null);
         } catch (err) {
-        setError("Error finishing walk: " + err.message);
+            setError("Error finishing walk: " + err.message);
         } finally {
-        setActionLoading(false);
+            setActionLoading(false);
         }
     };
 
@@ -197,10 +251,10 @@ import WaitingPaymentModal from "../../components/walker/WalkerWalks/modals/Wait
 
     const handleStartWalk = (walk) => {
         if (!canStartWalk()) {
-        setError(
-            `No puedes iniciar más paseos. Límite máximo: ${MAX_ACTIVE_WALKS} paseos activos simultáneamente.`
-        );
-        return;
+            setError(
+                `No puedes iniciar más paseos. Límite máximo: ${MAX_ACTIVE_WALKS} paseos activos simultáneamente.`
+            );
+            return;
         }
 
         setSelectedWalk(walk);
@@ -211,28 +265,28 @@ import WaitingPaymentModal from "../../components/walker/WalkerWalks/modals/Wait
         if (!selectedWalk) return;
 
         if (!canStartWalk()) {
-        setError(
-            `No puedes iniciar más paseos. Límite máximo: ${MAX_ACTIVE_WALKS} paseos activos simultáneamente.`
-        );
-        setShowStartWalkModal(false);
-        setSelectedWalk(null);
-        return;
+            setError(
+                `No puedes iniciar más paseos. Límite máximo: ${MAX_ACTIVE_WALKS} paseos activos simultáneamente.`
+            );
+            setShowStartWalkModal(false);
+            setSelectedWalk(null);
+            return;
         }
 
         try {
-        setActionLoading(true);
-        await WalksController.startWalk(selectedWalk.id);
-        setWalks(
-            walks.map((walk) =>
-            walk.id === selectedWalk.id ? { ...walk, status: "Activo" } : walk
-            )
-        );
-        setShowStartWalkModal(false);
-        setSelectedWalk(null);
+            setActionLoading(true);
+            await WalksController.startWalk(selectedWalk.id);
+            setAllWalks(
+                allWalks.map((walk) =>
+                    walk.id === selectedWalk.id ? { ...walk, status: "Activo" } : walk
+                )
+            );
+            setShowStartWalkModal(false);
+            setSelectedWalk(null);
         } catch (err) {
-        setError("Error starting walk: " + err.message);
+            setError("Error starting walk: " + err.message);
         } finally {
-        setActionLoading(false);
+            setActionLoading(false);
         }
     };
 
@@ -250,200 +304,182 @@ import WaitingPaymentModal from "../../components/walker/WalkerWalks/modals/Wait
         setError(null);
     };
 
-    const filteredWalks = walks.filter((walk) => {
-        let isInTab = false;
-
-        switch (activeTab) {
-        case "requests":
-            isInTab = ["Solicitado", "Esperando pago", "Agendado"].includes(
-            walk.status
-            );
-            break;
-        case "active":
-            isInTab = walk.status === "Activo";
-            break;
-        case "history":
-            isInTab = ["Cancelado", "Finalizado", "Rechazado"].includes(walk.status);
-            break;
-        default:
-            isInTab = false;
-        }
-
-        const matchesSearch =
-        walk.dogName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        walk.notes?.toLowerCase().includes(searchQuery.toLowerCase());
-
-        return isInTab && matchesSearch;
-    });
-
-    const requestsCount = walks.filter((walk) =>
+    const requestsCount = allWalks.filter((walk) =>
         ["Solicitado", "Esperando pago", "Agendado"].includes(walk.status)
     ).length;
 
-    const activeCount = walks.filter((walk) => walk.status === "Activo").length;
+    const activeCount = allWalks.filter((walk) => walk.status === "Activo").length;
 
-    const historyCount = walks.filter((walk) =>
+    const historyCount = allWalks.filter((walk) =>
         ["Cancelado", "Finalizado", "Rechazado"].includes(walk.status)
     ).length;
 
     useEffect(() => {
         if (error) {
-        const timer = setTimeout(() => {
-            setError(null);
-        }, 5000);
-        return () => clearTimeout(timer);
+            const timer = setTimeout(() => {
+                setError(null);
+            }, 5000);
+            return () => clearTimeout(timer);
         }
     }, [error]);
 
     if (loading) {
         return (
-        <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#10b981" />
-            <Text style={styles.loadingText}>Cargando paseos...</Text>
-        </View>
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#10b981" />
+                <Text style={styles.loadingText}>Cargando paseos...</Text>
+            </View>
         );
     }
 
     return (
         <View style={styles.container}>
-        <ScrollView
-            refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
-            showsVerticalScrollIndicator={false}
-        >
-            <WalkerWalksHeader
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-            requestsCount={requestsCount}
-            activeCount={activeCount}
-            historyCount={historyCount}
-            />
-
-            <View style={styles.limitsContainer}>
-            <View style={styles.limitsContent}>
-                <View style={styles.limitItem}>
-                <Text style={styles.limitLabel}>Paseos Aceptados:</Text>
-                <View
-                    style={[
-                    styles.limitBadge,
-                    countAcceptedWalks() >= MAX_ACCEPTED_WALKS
-                        ? styles.limitBadgeDanger
-                        : styles.limitBadgeSuccess,
-                    ]}
-                >
-                    <Text style={styles.limitBadgeText}>
-                    {countAcceptedWalks()}/{MAX_ACCEPTED_WALKS}
-                    </Text>
-                </View>
-                </View>
-                <View style={styles.limitItem}>
-                <Text style={styles.limitLabel}>Paseos Activos:</Text>
-                <View
-                    style={[
-                    styles.limitBadge,
-                    countActiveWalks() >= MAX_ACTIVE_WALKS
-                        ? styles.limitBadgeDanger
-                        : styles.limitBadgePrimary,
-                    ]}
-                >
-                    <Text style={styles.limitBadgeText}>
-                    {countActiveWalks()}/{MAX_ACTIVE_WALKS}
-                    </Text>
-                </View>
-                </View>
-            </View>
-            <Text style={styles.limitsSubtext}>
-                Límites de capacidad del paseador
-            </Text>
-            </View>
-
-            {error && (
-            <View style={styles.errorContainer}>
-                <Text style={styles.errorText}>{error}</Text>
-            </View>
-            )}
-
-            <WalkerWalksFilter
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            />
-
-            {filteredWalks.length === 0 ? (
-            <View style={styles.emptyContainer}>
-                <Text style={styles.emptyTitle}>
-                {activeTab === "requests" && "No tienes solicitudes pendientes"}
-                {activeTab === "active" && "No tienes paseos activos"}
-                {activeTab === "history" && "No hay paseos en el historial"}
-                </Text>
-                <Text style={styles.emptySubtitle}>
-                {activeTab === "requests" && "Las nuevas solicitudes aparecerán aquí"}
-                {activeTab === "active" && "Los paseos en progreso aparecerán aquí"}
-                {activeTab === "history" && "Tus paseos completados aparecerán aquí"}
-                </Text>
-            </View>
-            ) : (
-            <View style={styles.cardsContainer}>
-                {filteredWalks.map((walk) => (
-                <WalkerWalksCard
-                    key={walk.id}
-                    walk={walk}
-                    onAcceptWalk={handleAcceptWalk}
-                    onRejectWalk={handleRejectWalk}
-                    onShowWaitingPayment={handleShowWaitingPayment}
-                    onStartWalk={handleStartWalk}
-                    onViewWalk={handleViewWalk}
-                    onFinishWalk={handleFinishWalk}
-                    canAcceptMore={canAcceptWalk()}
-                    canStartMore={canStartWalk()}
+            <ScrollView
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                }
+                showsVerticalScrollIndicator={false}
+            >
+                <WalkerWalksHeader
+                    activeTab={activeTab}
+                    setActiveTab={setActiveTab}
+                    requestsCount={requestsCount}
+                    activeCount={activeCount}
+                    historyCount={historyCount}
                 />
-                ))}
-            </View>
-            )}
-        </ScrollView>
 
-        <AcceptWalkModal
-            isOpen={showAcceptModal}
-            onClose={handleCloseModals}
-            onConfirm={handleConfirmAccept}
-            walkData={selectedWalk}
-            isLoading={actionLoading}
-        />
+                <View style={styles.limitsContainer}>
+                    <View style={styles.limitsContent}>
+                        <View style={styles.limitItem}>
+                            <Text style={styles.limitLabel}>Paseos Aceptados:</Text>
+                            <View
+                                style={[
+                                    styles.limitBadge,
+                                    countAcceptedWalks() >= MAX_ACCEPTED_WALKS
+                                        ? styles.limitBadgeDanger
+                                        : styles.limitBadgeSuccess,
+                                ]}
+                            >
+                                <Text style={styles.limitBadgeText}>
+                                    {countAcceptedWalks()}/{MAX_ACCEPTED_WALKS}
+                                </Text>
+                            </View>
+                        </View>
+                        <View style={styles.limitItem}>
+                            <Text style={styles.limitLabel}>Paseos Activos:</Text>
+                            <View
+                                style={[
+                                    styles.limitBadge,
+                                    countActiveWalks() >= MAX_ACTIVE_WALKS
+                                        ? styles.limitBadgeDanger
+                                        : styles.limitBadgePrimary,
+                                ]}
+                            >
+                                <Text style={styles.limitBadgeText}>
+                                    {countActiveWalks()}/{MAX_ACTIVE_WALKS}
+                                </Text>
+                            </View>
+                        </View>
+                    </View>
+                    <Text style={styles.limitsSubtext}>
+                        Límites de capacidad del paseador
+                    </Text>
+                </View>
 
-        <RejectWalkModal
-            isOpen={showRejectModal}
-            onClose={handleCloseModals}
-            onConfirm={handleConfirmReject}
-            walkData={selectedWalk}
-            isLoading={actionLoading}
-        />
+                {error && (
+                    <View style={styles.errorContainer}>
+                        <Text style={styles.errorText}>{error}</Text>
+                    </View>
+                )}
 
-        <WaitingPaymentModal
-            isOpen={showWaitingPaymentModal}
-            onClose={handleCloseModals}
-            walkData={selectedWalk}
-        />
+                <WalkerWalksFilter
+                    searchQuery={searchQuery}
+                    setSearchQuery={setSearchQuery}
+                    selectedStatus={selectedStatus}
+                    setSelectedStatus={setSelectedStatus}
+                    sortBy={sortBy}
+                    setSortBy={setSortBy}
+                    activeTab={activeTab}
+                />
 
-        <StartWalkModal
-            isOpen={showStartWalkModal}
-            onClose={handleCloseModals}
-            onConfirm={handleConfirmStartWalk}
-            walkData={selectedWalk}
-            isLoading={actionLoading}
-        />
+                {displayedWalks.length === 0 ? (
+                    <View style={styles.emptyContainer}>
+                        <Text style={styles.emptyIcon}>🐕</Text>
+                        <Text style={styles.emptyTitle}>
+                            {searchQuery ? 'No se encontraron resultados' :
+                                activeTab === "requests" && "No tienes solicitudes pendientes"}
+                            {activeTab === "active" && "No tienes paseos activos"}
+                            {activeTab === "history" && "No hay paseos en el historial"}
+                        </Text>
+                        <Text style={styles.emptySubtitle}>
+                            {searchQuery ? 'Intenta con otra búsqueda' :
+                                activeTab === "requests" && "Las nuevas solicitudes aparecerán aquí"}
+                            {activeTab === "active" && "Los paseos en progreso aparecerán aquí"}
+                            {activeTab === "history" && "Tus paseos completados aparecerán aquí"}
+                        </Text>
+                    </View>
+                ) : (
+                    <View style={styles.cardsContainer}>
+                        {displayedWalks.map((walk) => (
+                            <WalkerWalksCard
+                                key={walk.id}
+                                walk={walk}
+                                onAcceptWalk={handleAcceptWalk}
+                                onRejectWalk={handleRejectWalk}
+                                onShowWaitingPayment={handleShowWaitingPayment}
+                                onStartWalk={handleStartWalk}
+                                onViewWalk={handleViewWalk}
+                                onFinishWalk={handleFinishWalk}
+                                canAcceptMore={canAcceptWalk()}
+                                canStartMore={canStartWalk()}
+                            />
+                        ))}
+                    </View>
+                )}
+            </ScrollView>
 
-        <FinishWalkModal
-            isOpen={showFinishWalkModal}
-            onClose={handleCloseModals}
-            onConfirm={handleConfirmFinishWalk}
-            walkData={selectedWalk}
-            isLoading={actionLoading}
-        />
+            <AcceptWalkModal
+                isOpen={showAcceptModal}
+                onClose={handleCloseModals}
+                onConfirm={handleConfirmAccept}
+                walkData={selectedWalk}
+                isLoading={actionLoading}
+            />
+
+            <RejectWalkModal
+                isOpen={showRejectModal}
+                onClose={handleCloseModals}
+                onConfirm={handleConfirmReject}
+                walkData={selectedWalk}
+                isLoading={actionLoading}
+            />
+
+            <WaitingPaymentModal
+                isOpen={showWaitingPaymentModal}
+                onClose={handleCloseModals}
+                walkData={selectedWalk}
+            />
+
+            <StartWalkModal
+                isOpen={showStartWalkModal}
+                onClose={handleCloseModals}
+                onConfirm={handleConfirmStartWalk}
+                walkData={selectedWalk}
+                isLoading={actionLoading}
+            />
+
+            <FinishWalkModal
+                isOpen={showFinishWalkModal}
+                onClose={handleCloseModals}
+                onConfirm={handleConfirmFinishWalk}
+                walkData={selectedWalk}
+                isLoading={actionLoading}
+            />
         </View>
     );
-    };
+};
 
-    const styles = StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "#f9fafb",
@@ -525,6 +561,10 @@ import WaitingPaymentModal from "../../components/walker/WalkerWalks/modals/Wait
         alignItems: "center",
         paddingVertical: 64,
         paddingHorizontal: 32,
+    },
+    emptyIcon: {
+        fontSize: 64,
+        marginBottom: 16,
     },
     emptyTitle: {
         fontSize: 18,
