@@ -51,7 +51,7 @@ export default function EditPetScreen() {
                 });
             }
         } catch (error) {
-            console.error('Error al cargar mascota:', error);
+            
             showError('Error al cargar la mascota');
         } finally {
             setLoadingPet(false);

@@ -63,7 +63,7 @@ export default function EditProfileWalkerScreen() {
             showSuccess('Tus cambios han sido guardados correctamente');
             router.push('/settings');
         } catch (error) {
-            console.error('Error al actualizar perfil:', error);
+            
             showError(error.message || 'Error al actualizar el perfil');
         } finally {
             setLoading(false);

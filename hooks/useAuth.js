@@ -48,7 +48,6 @@ export const AuthProvider = ({ children }) => {
                 setUser(null);
             }
         } catch (error) {
-            console.error('Error verificando sesión:', error);
             setUser(null);
             await apiClient.removeToken();
         } finally {
@@ -66,7 +65,6 @@ export const AuthProvider = ({ children }) => {
             
             return { success: true };
         } catch (error) {
-            console.error('Error en login:', error);
             setError(error.message || 'Error al iniciar sesión');
             return { success: false, error: error.message };
         } finally {
@@ -81,7 +79,6 @@ export const AuthProvider = ({ children }) => {
             setUser(null);
             router.replace('/(auth)/login');
         } catch (error) {
-            console.error('Error en logout:', error);
             setUser(null);
             router.replace('/(auth)/login');
         } finally {
@@ -100,7 +97,6 @@ export const AuthProvider = ({ children }) => {
             
             return { success: true };
         } catch (error) {
-            console.error('Error en registro:', error);
             setError(error.message || 'Error al registrar usuario');
             return { success: false, error: error.message };
         } finally {

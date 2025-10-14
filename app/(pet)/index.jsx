@@ -24,7 +24,7 @@ export default function PetsIndexScreen() {
             const data = await PetsController.fetchPetsByOwner(user.id);
             setPets(data);
         } catch (err) {
-            console.error(err);
+            
             showError('Error al cargar las mascotas');
         } finally {
             setLoading(false);

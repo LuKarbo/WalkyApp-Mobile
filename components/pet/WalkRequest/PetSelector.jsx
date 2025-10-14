@@ -27,7 +27,6 @@ export default function PetSelector({ selectedPets, onPetsChange, onContinue }) 
             setPets(petsData || []);
         } catch (err) {
             setError('Error al cargar mascotas');
-            console.error('Error loading pets:', err);
         } finally {
             setLoading(false);
         }

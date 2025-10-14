@@ -34,7 +34,7 @@ export default function WalkerSettingsScreen() {
                         await loadWalkerSettings();
                     }
                 } catch (error) {
-                    console.error('Error cargando datos del usuario:', error);
+                    
                 }
             };
 
@@ -57,13 +57,10 @@ export default function WalkerSettingsScreen() {
                     if (!isTracking) {
                         await GPSService.startBackgroundTracking(settings.gpsTrackingInterval);
                     }
-                } else {
-                    // Si solo tiene permisos en primer plano, usar ese modo
-                    console.log('⚠️ Solo permisos de primer plano, usando modo foreground');
                 }
             }
         } catch (error) {
-            console.error('Error cargando configuraciones del paseador:', error);
+            
         }
     };
 
@@ -73,7 +70,7 @@ export default function WalkerSettingsScreen() {
             try {
                 await GPSService.requestLocationPermissions();
             } catch (error) {
-                console.error('Error solicitando permisos:', error);
+                
             }
         };
 
@@ -90,7 +87,7 @@ export default function WalkerSettingsScreen() {
                 await Linking.openSettings();
             }
         } catch (error) {
-            console.error('Error abriendo configuración:', error);
+            
             showError('No se pudo abrir la configuración del dispositivo');
         }
     };
@@ -183,7 +180,7 @@ export default function WalkerSettingsScreen() {
                 await activateGPS(value, permissions.background);
             }
         } catch (error) {
-            console.error('Error en handleGpsToggle:', error);
+            
             showError('Error al cambiar estado del GPS');
             setIsLoading(false);
         }
@@ -210,7 +207,7 @@ export default function WalkerSettingsScreen() {
                     const subscription = await GPSService.startForegroundTracking(
                         180,
                         (location) => {
-                            console.log('📍 Ubicación capturada (primer plano):', location);
+                            
                         }
                     );
                     setForegroundSubscription(subscription);
@@ -219,9 +216,8 @@ export default function WalkerSettingsScreen() {
                 
                 try {
                     const location = await GPSService.getCurrentLocation();
-                    console.log('📍 Ubicación inicial:', location);
                 } catch (error) {
-                    console.error('Error obteniendo ubicación inicial:', error);
+
                 }
             } else {
                 
@@ -233,7 +229,7 @@ export default function WalkerSettingsScreen() {
                 showError('GPS Desactivado');
             }
         } catch (error) {
-            console.error('Error activando/desactivando GPS:', error);
+            
             showError(error.message || 'Error al actualizar GPS');
         } finally {
             setIsLoading(false);

@@ -21,7 +21,6 @@ export const SettingAPI = {
                 updatedAt: settings.updated_at
             };
         } catch (error) {
-            console.error("Error obteniendo configuraciones del paseador:", error);
             throw new Error(error.response?.data?.message || "Error al obtener configuraciones");
         }
     },
@@ -48,7 +47,6 @@ export const SettingAPI = {
                 updatedAt: settings.updated_at
             };
         } catch (error) {
-            console.error("Error actualizando configuraciones de GPS:", error);
             throw new Error(error.response?.data?.message || "Error al actualizar GPS");
         }
     },
@@ -72,7 +70,6 @@ export const SettingAPI = {
                 updatedAt: settings.updated_at
             };
         } catch (error) {
-            console.error("Error alternando GPS:", error);
             throw new Error(error.response?.data?.message || "Error al alternar GPS");
         }
     }

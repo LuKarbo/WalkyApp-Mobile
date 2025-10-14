@@ -16,7 +16,6 @@ export const WalksService = {
             const relevantStatuses = ['Activo', 'Agendado', 'Finalizado', 'Esperando pago'];
             return walksDTO.filter(walk => relevantStatuses.includes(walk.status));
         } catch (error) {
-            console.error('Service - Error getting walks for home:', error);
             throw error;
         }
     },
@@ -63,7 +62,6 @@ export const WalksService = {
 
             return walkDetailsDTO;
         } catch (error) {
-            console.error(`Service - Error getting walk details for ${id}:`, error);
             throw error;
         }
     },
@@ -82,7 +80,6 @@ export const WalksService = {
                 duration: walk.duration || 0
             }));
         } catch (error) {
-            console.error('Service - Error getting active walks:', error);
             throw error;
         }
     },
@@ -99,7 +96,6 @@ export const WalksService = {
                 status: walk.status
             }));
         } catch (error) {
-            console.error('Service - Error getting scheduled walks:', error);
             throw error;
         }
     },
@@ -117,7 +113,6 @@ export const WalksService = {
                 totalPrice: walk.totalPrice
             }));
         } catch (error) {
-            console.error('Service - Error getting walks awaiting payment:', error);
             throw error;
         }
     },
@@ -135,7 +130,6 @@ export const WalksService = {
                 totalPrice: walk.totalPrice
             }));
         } catch (error) {
-            console.error('Service - Error getting requested walks:', error);
             throw error;
         }
     },
@@ -163,7 +157,6 @@ export const WalksService = {
                 notes: walk.notes
             }));
         } catch (error) {
-            console.error(`Service - Error getting walks for walker ${walkerId}:`, error);
             throw error;
         }
     },
@@ -195,7 +188,6 @@ export const WalksService = {
                 notes: walk.notes
             }));
         } catch (error) {
-            console.error(`Service - Error getting walks for owner ${ownerId}:`, error);
             throw error;
         }
     },
@@ -232,7 +224,6 @@ export const WalksService = {
                 createdAt: newWalkRequest.createdAt
             };
         } catch (error) {
-            console.error('Service - Error creating walk request:', error);
             throw error;
         }
     },
@@ -259,7 +250,6 @@ export const WalksService = {
                 updatedAt: updatedWalk.updatedAt
             };
         } catch (error) {
-            console.error(`Service - Error updating walk ${walkId} status:`, error);
             throw error;
         }
     },
@@ -288,7 +278,6 @@ export const WalksService = {
 
             return true;
         } catch (error) {
-            console.error(`Service - Error validating status transition for walk ${walkId}:`, error);
             throw error;
         }
     },
@@ -334,7 +323,6 @@ export const WalksService = {
                 updatedAt: updatedWalk.updatedAt
             };
         } catch (error) {
-            console.error(`Service - Error changing walk ${walkId} status to ${newStatus}:`, error);
             throw error;
         }
     }

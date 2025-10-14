@@ -25,7 +25,6 @@ export default function WalkerSelector({ onWalkerSelect, onBack }) {
             await loadAllWalkersSettings(availableWalkers);
         } catch (err) {
             setError('Error al cargar paseadores');
-            console.error('Error loading walkers:', err);
         } finally {
             setLoading(false);
         }
@@ -37,7 +36,6 @@ export default function WalkerSelector({ onWalkerSelect, onBack }) {
                 const settings = await WalkerController.fetchWalkerSettings(walker.id);
                 return { walkerId: walker.id, settings };
             } catch (err) {
-                console.error(`Error loading settings for walker ${walker.id}:`, err);
                 return {
                     walkerId: walker.id,
                     settings: {

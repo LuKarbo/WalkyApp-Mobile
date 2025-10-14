@@ -1,7 +1,6 @@
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Alert, ScrollView, StyleSheet } from 'react-native';
-import { useToast } from '../../backend/Context/ToastContext';
 import { UserController } from '../../backend/Controllers/UserController';
 import ActionsSection from '../../components/client/settings/ActionsSection';
 import Footer from '../../components/client/settings/Footer';
@@ -12,7 +11,6 @@ import { useAuth } from '../../hooks/useAuth';
 export default function ClientSettingsScreen() {
     const { user, logout, updateUser } = useAuth();
     const router = useRouter();
-    const { showSuccess, showError } = useToast();
     const [currentUser, setCurrentUser] = useState(user);
 
     useFocusEffect(
@@ -23,7 +21,7 @@ export default function ClientSettingsScreen() {
                     setCurrentUser(userData);
                     updateUser(userData);
                 } catch (error) {
-                    console.error('Error cargando datos del usuario:', error);
+                    
                 }
             };
 

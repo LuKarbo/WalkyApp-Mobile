@@ -5,7 +5,6 @@ export const WalkerDataAccess = {
         try {
             return await WalkerAPI.getAllWalkers();
         } catch (error) {
-            console.error('DataAccess - Error al obtener paseadores:', error);
             throw error;
         }
     },
@@ -14,7 +13,6 @@ export const WalkerDataAccess = {
         try {
             return await WalkerAPI.getWalkerById(id);
         } catch (error) {
-            console.error(`DataAccess - Error al obtener paseador ${id}:`, error);
             throw error;
         }
     },
@@ -23,7 +21,6 @@ export const WalkerDataAccess = {
         try {
             return await WalkerAPI.getWalkerSettings(walkerId);
         } catch (error) {
-            console.error(`DataAccess - Error al obtener configuraciones del paseador ${walkerId}:`, error);
             throw error;
         }
     },
@@ -32,7 +29,6 @@ export const WalkerDataAccess = {
         try {
             return await WalkerAPI.updateWalkerSettings(walkerId, settings);
         } catch (error) {
-            console.error(`DataAccess - Error al actualizar configuraciones del paseador ${walkerId}:`, error);
             throw error;
         }
     },
@@ -41,7 +37,6 @@ export const WalkerDataAccess = {
         try {
             return await WalkerAPI.getWalkerEarnings(walkerId);
         } catch (error) {
-            console.error(`DataAccess - Error al obtener ganancias del paseador ${walkerId}:`, error);
             throw error;
         }
     },
@@ -50,7 +45,6 @@ export const WalkerDataAccess = {
         try {
             return await WalkerAPI.updateWalkerLocation(walkerId, location);
         } catch (error) {
-            console.error(`DataAccess - Error al actualizar ubicación del paseador ${walkerId}:`, error);
             throw error;
         }
     },
@@ -59,7 +53,6 @@ export const WalkerDataAccess = {
         try {
             return await WalkerAPI.updateWalkerPricing(walkerId, pricingData);
         } catch (error) {
-            console.error(`DataAccess - Error al actualizar precios del paseador ${walkerId}:`, error);
             throw error;
         }
     },
@@ -68,7 +61,6 @@ export const WalkerDataAccess = {
         try {
             return await WalkerAPI.searchWalkers(filters);
         } catch (error) {
-            console.error('DataAccess - Error al buscar paseadores:', error);
             throw error;
         }
     },
@@ -77,7 +69,6 @@ export const WalkerDataAccess = {
         try {
             return await WalkerAPI.validateWalker(walkerId);
         } catch (error) {
-            console.error(`DataAccess - Error al validar paseador ${walkerId}:`, error);
             throw error;
         }
     },
@@ -86,7 +77,6 @@ export const WalkerDataAccess = {
         try {
             return await WalkerAPI.updateWalkerMercadoPago(walkerId, mercadoPagoData);
         } catch (error) {
-            console.error(`DataAccess - Error al actualizar MercadoPago del paseador ${walkerId}:`, error);
             throw error;
         }
     }

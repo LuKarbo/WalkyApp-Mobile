@@ -6,7 +6,6 @@ export const SettingController = {
         try {
             return await SettingService.getWalkerSettings(walkerId);
         } catch (error) {
-            console.error('Error in SettingController.fetchWalkerSettings:', error);
             throw error;
         }
     },
@@ -15,7 +14,6 @@ export const SettingController = {
         try {
             return await SettingService.updateGpsSettings(walkerId, gpsData);
         } catch (error) {
-            console.error('Error in SettingController.updateGpsSettings:', error);
             throw error;
         }
     },
@@ -24,7 +22,6 @@ export const SettingController = {
         try {
             return await SettingService.toggleGpsTracking(walkerId);
         } catch (error) {
-            console.error('Error in SettingController.toggleGpsTracking:', error);
             throw error;
         }
     }

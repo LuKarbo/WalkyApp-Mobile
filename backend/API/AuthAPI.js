@@ -31,7 +31,6 @@ export const AuthAPI = {
                 token: userData.token
             };
         } catch (error) {
-            console.error("Error en login:", error);
             throw new Error("Credenciales inválidas o cuenta inactiva");
         }
     },
@@ -66,7 +65,6 @@ export const AuthAPI = {
                 token: userData.token || token
             };
         } catch (error) {
-            console.error("Error en checkSession:", error);
             apiClient.removeToken();
             throw new Error("Sesión inválida o expirada");
         }
@@ -77,7 +75,7 @@ export const AuthAPI = {
         try {
             await apiClient.post('/auth/logout');
         } catch (error) {
-            console.error("Error en logout:", error);
+            
         }
         
         apiClient.removeToken();

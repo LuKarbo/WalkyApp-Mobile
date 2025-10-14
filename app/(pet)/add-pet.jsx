@@ -77,7 +77,7 @@ export default function AddPetScreen() {
             router.back();
             showSuccess('Mascota agregada correctamente');
         } catch (error) {
-            console.error('Error al agregar mascota:', error);
+            
             router.back();
             showError(`Error al agregar la mascota: ${error.message}`);
         } finally {

@@ -94,7 +94,6 @@ export default function ClientWalksScreen() {
             setHasMoreData(true);
         } catch (err) {
             setError('Error loading trips: ' + err.message);
-            console.error('Error loading trips:', err);
         } finally {
             setLoading(false);
             setRefreshing(false);

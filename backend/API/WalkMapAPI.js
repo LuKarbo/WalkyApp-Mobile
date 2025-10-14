@@ -18,7 +18,6 @@ export const WalkMapAPI = {
                 message: response.data.message
             };
         } catch (error) {
-            console.error("Error guardando ubicación GPS:", error);
             throw new Error(error.response?.data?.message || "Error al guardar ubicación");
         }
     },
@@ -34,7 +33,6 @@ export const WalkMapAPI = {
                 locations: response.data.data.locations
             };
         } catch (error) {
-            console.error("Error obteniendo ruta del paseo:", error);
             throw new Error(error.response?.data?.message || "Error al obtener ruta");
         }
     },
@@ -59,7 +57,6 @@ export const WalkMapAPI = {
                 lng: location.lng
             }));
         } catch (error) {
-            console.error('Error obteniendo registros del paseo:', error);
             throw error;
         }
     },
@@ -74,7 +71,6 @@ export const WalkMapAPI = {
                 locationCount: response.data.data.locationCount
             };
         } catch (error) {
-            console.error("Error verificando disponibilidad del mapa:", error);
             throw new Error(error.response?.data?.message || "Error al verificar mapa");
         }
     },
@@ -84,7 +80,6 @@ export const WalkMapAPI = {
             const response = await apiClient.get(`/chat/walks/${walkId}/messages`);
             return response.data.data;
         } catch (error) {
-            console.error('Error obteniendo mensajes del chat:', error);
             throw error;
         }
     },
@@ -102,7 +97,6 @@ export const WalkMapAPI = {
             
             return response.data.data;
         } catch (error) {
-            console.error('Error enviando mensaje:', error);
             throw error;
         }
     },
@@ -115,7 +109,6 @@ export const WalkMapAPI = {
             
             return response.data.data;
         } catch (error) {
-            console.error('Error marcando mensajes como leídos:', error);
             throw error;
         }
     },
@@ -125,7 +118,6 @@ export const WalkMapAPI = {
             const response = await apiClient.get(`/chat/users/${userId}/unread-count`);
             return response.data.data;
         } catch (error) {
-            console.error('Error obteniendo contador de no leídos:', error);
             throw error;
         }
     }

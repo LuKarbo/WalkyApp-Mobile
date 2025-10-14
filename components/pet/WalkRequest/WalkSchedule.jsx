@@ -97,8 +97,7 @@ export default function WalkSchedule({
             onSuccess();
 
         } catch (error) {
-            console.log(error);
-            
+
             let errorMessage = 'No se pudo enviar la solicitud';
             
             if (error.message) {

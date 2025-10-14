@@ -22,7 +22,6 @@ export const UserAPI = {
                 lastLogin: user.lastLogin || user.last_login
             };
         } catch (error) {
-            console.error("Error obteniendo usuario por ID:", error);
             throw new Error("Usuario no encontrado");
         }
     },
@@ -51,7 +50,6 @@ export const UserAPI = {
                 lastLogin: user.lastLogin || user.last_login
             };
         } catch (error) {
-            console.error("Error actualizando usuario:", error);
             throw new Error(error.response?.data?.message || "Error al actualizar usuario");
         }
     }

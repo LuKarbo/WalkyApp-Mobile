@@ -6,7 +6,6 @@ export const WalksAPI = {
             const response = await apiClient.get('/walks');
             return response.data.walks;
         } catch (error) {
-            console.error('Error fetching all walks:', error);
             throw error;
         }
     },
@@ -16,7 +15,6 @@ export const WalksAPI = {
             const response = await apiClient.get(`/walks/${id}`);
             return response.data.walk;
         } catch (error) {
-            console.error(`Error fetching walk ${id}:`, error);
             throw error;
         }
     },
@@ -26,7 +24,6 @@ export const WalksAPI = {
             const response = await apiClient.get(`/walks/status/${status}`);
             return response.data.walks;
         } catch (error) {
-            console.error(`Error fetching walks by status ${status}:`, error);
             throw error;
         }
     },
@@ -36,7 +33,6 @@ export const WalksAPI = {
             const response = await apiClient.get(`/walks/walker/${walkerId}`);
             return response.data.walks;
         } catch (error) {
-            console.error(`Error fetching walks for walker ${walkerId}:`, error);
             throw error;
         }
     },
@@ -46,7 +42,6 @@ export const WalksAPI = {
             const response = await apiClient.get(`/walks/owner/${ownerId}`);
             return response.data.walks;
         } catch (error) {
-            console.error(`Error fetching walks for owner ${ownerId}:`, error);
             throw error;
         }
     },
@@ -56,7 +51,6 @@ export const WalksAPI = {
             const response = await apiClient.get('/walks/active');
             return response.data.walks;
         } catch (error) {
-            console.error('Error fetching active walks:', error);
             throw error;
         }
     },
@@ -66,7 +60,6 @@ export const WalksAPI = {
             const response = await apiClient.get('/walks/scheduled');
             return response.data.walks;
         } catch (error) {
-            console.error('Error fetching scheduled walks:', error);
             throw error;
         }
     },
@@ -76,7 +69,6 @@ export const WalksAPI = {
             const response = await apiClient.get('/walks/awaiting-payment');
             return response.data.walks;
         } catch (error) {
-            console.error('Error fetching walks awaiting payment:', error);
             throw error;
         }
     },
@@ -86,7 +78,6 @@ export const WalksAPI = {
             const response = await apiClient.get('/walks/requested');
             return response.data.walks;
         } catch (error) {
-            console.error('Error fetching requested walks:', error);
             throw error;
         }
     },
@@ -96,7 +87,6 @@ export const WalksAPI = {
             const response = await apiClient.post('/walks', walkRequestData);
             return response.data.walk;
         } catch (error) {
-            console.error('Error creating walk request:', error);
             throw error;
         }
     },
@@ -106,7 +96,6 @@ export const WalksAPI = {
             const response = await apiClient.patch(`/walks/${walkId}/status`, { status });
             return response.data.walk;
         } catch (error) {
-            console.error(`Error updating walk ${walkId} status:`, error);
             throw error;
         }
     },
@@ -116,7 +105,6 @@ export const WalksAPI = {
             const response = await apiClient.put(`/walks/${walkId}`, walkData);
             return response.data.walk;
         } catch (error) {
-            console.error(`Error updating walk ${walkId}:`, error);
             throw error;
         }
     },
@@ -126,7 +114,6 @@ export const WalksAPI = {
             const response = await apiClient.patch(`/walks/${walkId}/accept`);
             return response.data.walk;
         } catch (error) {
-            console.error(`Error accepting walk request ${walkId}:`, error);
             throw error;
         }
     },
@@ -136,7 +123,6 @@ export const WalksAPI = {
             const response = await apiClient.patch(`/walks/${walkId}/reject`);
             return response.data.walk;
         } catch (error) {
-            console.error(`Error rejecting walk request ${walkId}:`, error);
             throw error;
         }
     },
@@ -146,7 +132,6 @@ export const WalksAPI = {
             const response = await apiClient.patch(`/walks/${walkId}/confirm-payment`);
             return response.data.walk;
         } catch (error) {
-            console.error(`Error confirming payment for walk ${walkId}:`, error);
             throw error;
         }
     },
@@ -156,7 +141,6 @@ export const WalksAPI = {
             const response = await apiClient.patch(`/walks/${walkId}/start`);
             return response.data.walk;
         } catch (error) {
-            console.error(`Error starting walk ${walkId}:`, error);
             throw error;
         }
     },
@@ -166,7 +150,6 @@ export const WalksAPI = {
             const response = await apiClient.patch(`/walks/${walkId}/finish`);
             return response.data.walk;
         } catch (error) {
-            console.error(`Error finishing walk ${walkId}:`, error);
             throw error;
         }
     },
@@ -176,7 +159,6 @@ export const WalksAPI = {
             const response = await apiClient.patch(`/walks/${walkId}/cancel`);
             return response.data.walk;
         } catch (error) {
-            console.error(`Error cancel walk ${walkId}:`, error);
             throw error;
         }
     },
@@ -186,7 +168,6 @@ export const WalksAPI = {
             const response = await apiClient.delete(`/walks/${walkId}`);
             return response.data;
         } catch (error) {
-            console.error(`Error deleting walk ${walkId}:`, error);
             throw error;
         }
     },
@@ -196,7 +177,6 @@ export const WalksAPI = {
             const response = await apiClient.get(`/walks/${walkId}/validate`);
             return response.data.isValid;
         } catch (error) {
-            console.error(`Error validating walk ${walkId}:`, error);
             throw error;
         }
     }

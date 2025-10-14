@@ -24,8 +24,6 @@ export const WalkerService = {
 
             return [...topWalkers, walkerPlaceholder];
         } catch (error) {
-            console.error('Service - Error al obtener paseadores para home:', error);
-            
             return [{
                 id: 6,
                 isPlaceholder: true,
@@ -49,7 +47,6 @@ export const WalkerService = {
 
             return [...walkersDTO];
         } catch (error) {
-            console.error('Service - Error al obtener paseadores para home:', error);
             
             return [];
         }
@@ -69,7 +66,6 @@ export const WalkerService = {
 
             return walkerProfileDTO;
         } catch (error) {
-            console.error(`Service - Error al obtener perfil del paseador ${id}:`, error);
             throw error;
         }
     },
@@ -80,15 +76,14 @@ export const WalkerService = {
         }
 
         const walkerSettings = await WalkerDataAccess.getWalkerSettings(walkerId);
-        
         return {
             location: walkerSettings.location || "",
-            pricePerPet: walkerSettings.pricePerPet || 0,
-            hasGPSTracker: walkerSettings.hasGPSTracker || false,
-            hasDiscount: walkerSettings.hasDiscount || false,
-            discountPercentage: walkerSettings.discountPercentage || 0,
-            hasMercadoPago: walkerSettings.hasMercadoPago || false,
-            tokenMercadoPago: walkerSettings.tokenMercadoPago || null
+            pricePerPet: walkerSettings.price_per_pet || 0,
+            hasGPSTracker: walkerSettings.gps_tracking_enabled || false,
+            hasDiscount: walkerSettings.has_discount || false,
+            discountPercentage: walkerSettings.discount_percentage || 0,
+            hasMercadoPago: walkerSettings.has_mercadopago || false,
+            tokenMercadoPago: walkerSettings.token_mercadopago || null
         };
     },
 
@@ -262,7 +257,6 @@ export const WalkerService = {
             completedWalks: earnings.completedWalks
         };
     } catch (error) {
-        console.error(`Service - Error al calcular ganancias del paseador ${walkerId}:`, error);
         
         return {
             monthly: 0,

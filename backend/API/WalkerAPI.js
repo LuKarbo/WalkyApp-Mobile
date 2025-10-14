@@ -8,7 +8,6 @@ export const WalkerAPI = {
             
             return response.data.walkers || [];
         } catch (error) {
-            console.error('Error al obtener paseadores:', error);
             throw new Error('No se pudieron cargar los paseadores');
         }
     },
@@ -22,7 +21,6 @@ export const WalkerAPI = {
             const response = await apiClient.get(`/walkers/${id}`);
             return response.data.walker || null;
         } catch (error) {
-            console.error(`Error al obtener paseador ${id}:`, error);
             if (error.message.includes('404')) {
                 return null;
             }
@@ -47,7 +45,6 @@ export const WalkerAPI = {
                 tokenMercadoPago: null
             };
         } catch (error) {
-            console.error(`Error al obtener configuraciones del paseador ${walkerId}:`, error);
             
             return {
                 location: "",
@@ -82,13 +79,11 @@ export const WalkerAPI = {
             const response = await apiClient.patch(`/walkers/${walkerId}/mercadopago`, mercadoPagoData);
             return response.data.settings;
         } catch (error) {
-            console.error(`Error al actualizar MercadoPago del paseador ${walkerId}:`, error);
             throw new Error(error.message || 'No se pudo actualizar la configuración de MercadoPago');
         }
     },
 
     async updateWalkerSettings(walkerId, settings) {
-        
         try {
             if (!walkerId) {
                 throw new Error('ID de paseador requerido');
@@ -102,7 +97,6 @@ export const WalkerAPI = {
             
             return response.data.settings;
         } catch (error) {
-            console.error(`Error al actualizar configuraciones del paseador ${walkerId}:`, error);
             throw new Error(error.message || 'No se pudieron actualizar las configuraciones');
         }
     },
@@ -126,7 +120,6 @@ export const WalkerAPI = {
                     earnings.currentPricePerPet
             };
         } catch (error) {
-            console.error(`Error al obtener configuraciones de ganancias del paseador ${walkerId}:`, error);
             
             return {
                 pricePerPet: 15000,
@@ -153,7 +146,6 @@ export const WalkerAPI = {
             
             return response.data.settings;
         } catch (error) {
-            console.error(`Error al actualizar ubicación del paseador ${walkerId}:`, error);
             throw new Error(error.message || 'No se pudo actualizar la ubicación');
         }
     },
@@ -187,7 +179,6 @@ export const WalkerAPI = {
             
             return response.data.settings;
         } catch (error) {
-            console.error(`Error al actualizar precios del paseador ${walkerId}:`, error);
             throw new Error(error.message || 'No se pudieron actualizar los precios');
         }
     },
@@ -208,7 +199,6 @@ export const WalkerAPI = {
             const response = await apiClient.get(endpoint);
             return response.data.walkers || [];
         } catch (error) {
-            console.error('Error al buscar paseadores:', error);
             throw new Error('No se pudieron buscar los paseadores');
         }
     },
@@ -222,7 +212,6 @@ export const WalkerAPI = {
             const response = await apiClient.get(`/walkers/${walkerId}/validate`);
             return response.data.isValid || false;
         } catch (error) {
-            console.error(`Error al validar paseador ${walkerId}:`, error);
             return false;
         }
     },
@@ -243,7 +232,6 @@ export const WalkerAPI = {
                 discountPercentage: 0
             };
         } catch (error) {
-            console.error(`Error al obtener ganancias del paseador ${walkerId}:`, error);
             
             return {
                 monthly: 0,
