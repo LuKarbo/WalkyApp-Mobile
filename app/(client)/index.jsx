@@ -1,12 +1,13 @@
+import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import {
     ActivityIndicator,
-    Alert,
     FlatList,
     StyleSheet,
     Text,
-    View,
+    View
 } from 'react-native';
+import { useToast } from "../../backend/Context/ToastContext";
 import { ReviewsController } from '../../backend/Controllers/ReviewsController';
 import { WalksController } from '../../backend/Controllers/WalksController';
 import MyTripsCardComponent from '../../components/client/MyWalks/components/MyTripsCardComponent';
@@ -24,6 +25,8 @@ const ITEMS_PER_PAGE = 10;
 export default function ClientWalksScreen() {
     const { user } = useAuth();
     const userId = user?.id;
+    const router = useRouter();
+    const { showSuccess, showError } = useToast();
 
     const [allTrips, setAllTrips] = useState([]);
     const [displayedTrips, setDisplayedTrips] = useState([]);
@@ -37,10 +40,9 @@ export default function ClientWalksScreen() {
     const [currentPage, setCurrentPage] = useState(1);
     const [hasMoreData, setHasMoreData] = useState(true);
 
-    // Estados de filtros avanzados
     const [selectedStatus, setSelectedStatus] = useState(null);
     const [dateRange, setDateRange] = useState({ start: null, end: null });
-    const [sortBy, setSortBy] = useState('date-desc'); // date-desc, date-asc, price-desc, price-asc
+    const [sortBy, setSortBy] = useState('date-desc');
 
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [tripToCancel, setTripToCancel] = useState(null);
@@ -104,11 +106,9 @@ export default function ClientWalksScreen() {
         loadTrips();
     }, [userId]);
 
-    // Función para aplicar filtros y ordenamiento
     const applyFiltersAndSort = useCallback((trips) => {
         let filtered = [...trips];
 
-        // Filtro por tab (activo/historial)
         filtered = filtered.filter(trip => {
             if (activeTab === "active") {
                 return ["Solicitado", "Esperando pago", "Agendado", "Activo"].includes(trip.status);
@@ -117,7 +117,6 @@ export default function ClientWalksScreen() {
             }
         });
 
-        // Filtro por búsqueda
         if (searchQuery) {
             filtered = filtered.filter(trip => 
                 trip.dogName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -125,12 +124,10 @@ export default function ClientWalksScreen() {
             );
         }
 
-        // Filtro por estado específico
         if (selectedStatus) {
             filtered = filtered.filter(trip => trip.status === selectedStatus);
         }
 
-        // Filtro por rango de fechas
         if (dateRange.start && dateRange.end) {
             filtered = filtered.filter(trip => {
                 const tripDate = new Date(trip.startTime);
@@ -138,7 +135,6 @@ export default function ClientWalksScreen() {
             });
         }
 
-        // Ordenamiento
         filtered.sort((a, b) => {
             switch (sortBy) {
                 case 'date-desc':
@@ -157,7 +153,6 @@ export default function ClientWalksScreen() {
         return filtered;
     }, [activeTab, searchQuery, selectedStatus, dateRange, sortBy]);
 
-    // Actualizar trips mostrados cuando cambian los filtros
     useEffect(() => {
         const filtered = applyFiltersAndSort(allTrips);
         const paginated = filtered.slice(0, currentPage * ITEMS_PER_PAGE);
@@ -165,7 +160,6 @@ export default function ClientWalksScreen() {
         setHasMoreData(paginated.length < filtered.length);
     }, [allTrips, currentPage, applyFiltersAndSort]);
 
-    // Reset page cuando cambian filtros
     useEffect(() => {
         setCurrentPage(1);
     }, [activeTab, searchQuery, selectedStatus, dateRange, sortBy]);
@@ -208,7 +202,7 @@ export default function ClientWalksScreen() {
             setTripToCancel(null);
         } catch (err) {
             setError('Error cancelling trip: ' + err.message);
-            Alert.alert('Error', 'No se pudo cancelar el paseo');
+            showError('No se pudo cancelar el paseo');
         } finally {
             setCancelLoading(false);
         }
@@ -241,7 +235,7 @@ export default function ClientWalksScreen() {
             setTripToPay(null);
         } catch (err) {
             setError('Error processing payment: ' + err.message);
-            Alert.alert('Error', 'No se pudo procesar el pago');
+            showError('No se pudo procesar el pago');
         } finally {
             setPaymentLoading(false);
         }
@@ -258,7 +252,7 @@ export default function ClientWalksScreen() {
             setTripToReview(completeTrip);
             setShowReviewModal(true);
         } catch (err) {
-            Alert.alert('Error', 'No se pudo cargar la información del paseo');
+            showError('No se pudo cargar la información del paseo');
         }
     };
 
@@ -282,10 +276,10 @@ export default function ClientWalksScreen() {
             
             setShowReviewModal(false);
             setTripToReview(null);
-            Alert.alert('Éxito', 'Reseña creada correctamente');
+            showSuccess('Reseña creada correctamente');
         } catch (err) {
             setError('Error creating review: ' + err.message);
-            Alert.alert('Error', 'No se pudo crear la reseña');
+            showError('No se pudo crear la reseña');
         } finally {
             setReviewLoading(false);
         }
@@ -308,11 +302,11 @@ export default function ClientWalksScreen() {
                 setCurrentReview(review);
                 setShowViewReviewModal(true);
             } else {
-                Alert.alert('Error', 'No se encontró la reseña');
+                showError('No se encontró la reseña');
             }
         } catch (err) {
             setError('Error loading review: ' + err.message);
-            Alert.alert('Error', 'No se pudo cargar la reseña');
+            showError('No se pudo cargar la reseña');
         }
     };
 
@@ -322,9 +316,12 @@ export default function ClientWalksScreen() {
         setCurrentReview(null);
     };
 
-    const handleViewTrip = (tripId) => {
-        Alert.alert('Ver Paseo', `Navegando a detalles del paseo ${tripId}`);
-    };
+const handleViewTrip = (tripId) => {
+    router.push({
+        pathname: '/walkView',
+        params: { tripId }
+    });
+};
 
     const activeTripsCount = allTrips.filter(trip => 
         ["Solicitado", "Esperando pago", "Agendado", "Activo"].includes(trip.status)

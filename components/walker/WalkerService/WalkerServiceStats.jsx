@@ -40,8 +40,8 @@ const WalkerServiceStats = ({ stats }) => {
             color: "#059669"
         },
         {
-            title: "Rechazados",
-            value: stats.rejected,
+            title: "Rechazados y Cancelados",
+            value: (stats.rejected + stats.canceled),
             icon: "close-circle",
             color: "#ef4444"
         }

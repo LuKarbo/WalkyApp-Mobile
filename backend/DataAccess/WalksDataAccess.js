@@ -57,7 +57,6 @@ export const WalksDataAccess = {
         }
     },
 
-    // Métodos específicos para endpoints dedicados
     async acceptWalkRequest(walkId) {
         try {
             return await WalksAPI.acceptWalkRequest(walkId);

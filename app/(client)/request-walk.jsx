@@ -6,7 +6,7 @@ import WalkerSelector from '../../components/pet/WalkRequest/WalkerSelector';
 import WalkSchedule from '../../components/pet/WalkRequest/WalkSchedule';
 
 export default function RequestWalkScreen({ navigation }) {
-    const [step, setStep] = useState('select-pets'); // 'select-pets' | 'select-walker' | 'schedule'
+    const [step, setStep] = useState('select-pets');
     const [selectedPets, setSelectedPets] = useState([]);
     const [selectedWalker, setSelectedWalker] = useState(null);
     const [walkerSettings, setWalkerSettings] = useState(null);

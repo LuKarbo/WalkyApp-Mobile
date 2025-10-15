@@ -17,7 +17,7 @@ const PRESET_PHOTOS = [
 ];
 
 export default function EditProfileWalkerScreen() {
-    const { user, updateUser } = useAuth(); // ⬅️ AGREGAR updateUser
+    const { user, updateUser } = useAuth(); 
     const router = useRouter();
     const { showSuccess, showError } = useToast();
 

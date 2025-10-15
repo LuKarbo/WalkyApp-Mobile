@@ -143,7 +143,8 @@ const WalkerServiceScreen = () => {
             scheduled: walksData.filter(w => w.status === 'Agendado').length,
             active: walksData.filter(w => w.status === 'Activo').length,
             completed: walksData.filter(w => w.status === 'Finalizado').length,
-            rejected: walksData.filter(w => w.status === 'Rechazado').length
+            rejected: walksData.filter(w => w.status === 'Rechazado').length,
+            canceled: walksData.filter(w => w.status === 'Cancelado').length
         };
 
         return stats;
@@ -158,7 +159,6 @@ const WalkerServiceScreen = () => {
             setSaving(true);
             setError(null);
 
-            // Asegurar que pricePerPet sea un número válido mayor a 0
             const priceValue = parseFloat(settings.pricePerPet);
             if (isNaN(priceValue) || priceValue <= 0) {
                 setError('El precio por mascota debe ser mayor a 0');

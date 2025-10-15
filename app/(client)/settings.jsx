@@ -1,17 +1,20 @@
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Alert, ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import { UserController } from '../../backend/Controllers/UserController';
 import ActionsSection from '../../components/client/settings/ActionsSection';
 import Footer from '../../components/client/settings/Footer';
 import InfoSection from '../../components/client/settings/InfoSection';
 import ProfileHeader from '../../components/client/settings/ProfileHeader';
+import LogoutModal from '../../components/common/LogoutModal';
 import { useAuth } from '../../hooks/useAuth';
 
 export default function ClientSettingsScreen() {
     const { user, logout, updateUser } = useAuth();
     const router = useRouter();
     const [currentUser, setCurrentUser] = useState(user);
+    const [showLogoutModal, setShowLogoutModal] = useState(false);
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
 
     useFocusEffect(
         useCallback(() => {
@@ -30,23 +33,23 @@ export default function ClientSettingsScreen() {
     );
 
     const handleLogout = () => {
-        Alert.alert(
-            'Cerrar Sesión',
-            '¿Estás seguro que deseas cerrar sesión?',
-            [
-                {
-                    text: 'Cancelar',
-                    style: 'cancel',
-                },
-                {
-                    text: 'Cerrar Sesión',
-                    style: 'destructive',
-                    onPress: async () => {
-                        await logout();
-                    },
-                },
-            ]
-        );
+        setShowLogoutModal(true);
+    };
+
+    const handleConfirmLogout = async () => {
+        try {
+            setIsLoggingOut(true);
+            await logout();
+            setShowLogoutModal(false);
+        } catch (error) {
+            
+        } finally {
+            setIsLoggingOut(false);
+        }
+    };
+
+    const handleCancelLogout = () => {
+        setShowLogoutModal(false);
     };
 
     const getRoleBadgeColor = (role) => {
@@ -76,23 +79,32 @@ export default function ClientSettingsScreen() {
     };
 
     return (
-        <ScrollView style={styles.container}>
-            <ProfileHeader
-                user={currentUser}
-                getRoleBadgeColor={getRoleBadgeColor}
-                getRoleLabel={getRoleLabel}
+        <>
+            <ScrollView style={styles.container}>
+                <ProfileHeader
+                    user={currentUser}
+                    getRoleBadgeColor={getRoleBadgeColor}
+                    getRoleLabel={getRoleLabel}
+                />
+
+                <InfoSection user={currentUser} />
+
+                <ActionsSection
+                    onEditProfile={() => router.push('/edit-profile')}
+                    onAddPet={() => router.push('/(pet)')}
+                    onLogout={handleLogout}
+                />
+
+                <Footer />
+            </ScrollView>
+
+            <LogoutModal
+                visible={showLogoutModal}
+                onClose={handleCancelLogout}
+                onConfirm={handleConfirmLogout}
+                isLoading={isLoggingOut}
             />
-
-            <InfoSection user={currentUser} />
-
-            <ActionsSection
-                onEditProfile={() => router.push('/edit-profile')}
-                onAddPet={() => router.push('/(pet)')}
-                onLogout={handleLogout}
-            />
-
-            <Footer />
-        </ScrollView>
+        </>
     );
 }
 

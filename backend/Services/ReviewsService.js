@@ -8,7 +8,6 @@ export const ReviewsService = {
 
         const reviews = await ReviewsDataAccess.getReviewsByUser(userId);
         
-        // Filtrar por término de búsqueda
         let filteredReviews = reviews;
         if (searchTerm) {
             const searchLower = searchTerm.toLowerCase();
@@ -19,15 +18,12 @@ export const ReviewsService = {
             );
         }
 
-        // Ordenar por fecha (más recientes primero)
         filteredReviews.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-        // Aplicar paginación
         const startIndex = (page - 1) * limit;
         const endIndex = startIndex + limit;
         const paginatedReviews = filteredReviews.slice(startIndex, endIndex);
 
-        // Mapear a DTO
         const reviewsDTO = paginatedReviews.map(review => ({
             id: review.id,
             walkerName: review.walkerName,

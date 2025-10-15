@@ -162,7 +162,6 @@ export const WalkerAPI = {
 
             const { pricePerPet, hasDiscount, discountPercentage } = pricingData;
 
-            // Validaciones del lado del cliente
             if (pricePerPet !== undefined && pricePerPet < 0) {
                 throw new Error('El precio por mascota no puede ser negativo');
             }
@@ -183,7 +182,6 @@ export const WalkerAPI = {
         }
     },
 
-    // Métodos adicionales útiles
     async searchWalkers(filters = {}) {
         try {
             const queryParams = new URLSearchParams();

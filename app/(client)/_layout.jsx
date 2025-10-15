@@ -75,6 +75,24 @@ export default function ClientLayout() {
                 ),
             }}
         />
+        <Tabs.Screen
+            name="walkView"
+            options={{
+                href: null,
+                headerShown: true,
+                headerTitle: 'Mapa/Chat del paseo',
+                headerLeft: () => (
+                    <TouchableOpacity
+                    onPress={() => {
+                        router.push('/(client)');
+                    }}
+                    style={{ marginLeft: 16 }}
+                    >
+                    <Text style={{ color: '#fff', fontSize: 16 }}>← volver </Text>
+                    </TouchableOpacity>
+                ),
+            }}
+        />
         </Tabs>
     );
 }

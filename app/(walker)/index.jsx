@@ -1,7 +1,7 @@
+import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from "react";
 import {
     ActivityIndicator,
-    Alert,
     RefreshControl,
     ScrollView,
     StyleSheet,
@@ -9,6 +9,7 @@ import {
     View
 } from "react-native";
 
+import { useToast } from "../../backend/Context/ToastContext";
 import { ReviewsController } from "../../backend/Controllers/ReviewsController";
 import { WalksController } from "../../backend/Controllers/WalksController";
 import { useAuth } from "../../hooks/useAuth";
@@ -32,7 +33,6 @@ const WalkerWalksScreen = () => {
     const [activeTab, setActiveTab] = useState("requests");
     const [searchQuery, setSearchQuery] = useState("");
 
-    // Estados de filtros avanzados
     const [selectedStatus, setSelectedStatus] = useState(null);
     const [sortBy, setSortBy] = useState('date-desc');
 
@@ -53,6 +53,8 @@ const WalkerWalksScreen = () => {
 
     const { user } = useAuth();
     const walkerId = user?.id;
+    const router = useRouter();
+    const { showError } = useToast();
 
     const loadWalks = async () => {
         if (!walkerId) return;
@@ -63,7 +65,6 @@ const WalkerWalksScreen = () => {
 
             const walksData = await WalksController.fetchWalksByWalker(walkerId);
             
-            // Cargar información de reviews para paseos finalizados
             const walksWithReviews = await Promise.all(
                 walksData.map(async (walk) => {
                     if (walk.status === 'Finalizado') {
@@ -124,11 +125,9 @@ const WalkerWalksScreen = () => {
         return activeCount < MAX_ACTIVE_WALKS;
     };
 
-    // Función para aplicar filtros y ordenamiento
     const applyFiltersAndSort = useCallback((walks) => {
         let filtered = [...walks];
 
-        // Filtro por tab (requests/active/history)
         filtered = filtered.filter(walk => {
             switch (activeTab) {
                 case "requests":
@@ -142,7 +141,6 @@ const WalkerWalksScreen = () => {
             }
         });
 
-        // Filtro por búsqueda
         if (searchQuery) {
             filtered = filtered.filter(walk =>
                 walk.dogName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -150,12 +148,10 @@ const WalkerWalksScreen = () => {
             );
         }
 
-        // Filtro por estado específico
         if (selectedStatus) {
             filtered = filtered.filter(walk => walk.status === selectedStatus);
         }
 
-        // Ordenamiento
         filtered.sort((a, b) => {
             switch (sortBy) {
                 case 'date-desc':
@@ -174,7 +170,6 @@ const WalkerWalksScreen = () => {
         return filtered;
     }, [activeTab, searchQuery, selectedStatus, sortBy]);
 
-    // Actualizar walks mostrados cuando cambian los filtros
     useEffect(() => {
         const filtered = applyFiltersAndSort(allWalks);
         setDisplayedWalks(filtered);
@@ -327,7 +322,10 @@ const WalkerWalksScreen = () => {
     };
 
     const handleViewWalk = (walkId) => {
-        Alert.alert('Ver Paseo', `Navegando a detalles del paseo ${walkId}`);
+        router.push({
+            pathname: '/walkView',
+            params: { walkId }
+        });
     };
 
     const handleViewReview = async (walk) => {
@@ -341,12 +339,11 @@ const WalkerWalksScreen = () => {
             if (hasValidReview) {
                 setCurrentReview(review);
                 setShowViewReviewModal(true);
-            } else {
-                Alert.alert('Info', 'Este paseo aún no tiene una reseña');
             }
+            
         } catch (err) {
             setError('Error loading review: ' + err.message);
-            Alert.alert('Error', 'No se pudo cargar la reseña');
+            showError('No se pudo cargar la reseña');
         }
     };
 

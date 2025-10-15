@@ -21,7 +21,6 @@ export default function WalkerWalksFilter({
 }) {
     const [showFilterModal, setShowFilterModal] = useState(false);
 
-    // Estados disponibles según el tab activo
     const requestStatuses = ["Solicitado", "Esperando pago", "Agendado"];
     const activeStatuses = ["Activo"];
     const historyStatuses = ["Finalizado", "Rechazado", "Cancelado"];

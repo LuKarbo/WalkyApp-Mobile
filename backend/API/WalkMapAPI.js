@@ -13,8 +13,8 @@ export const WalkMapAPI = {
             });
             
             return {
-                savedCount: response.data.data.savedCount,
-                locations: response.data.data.locations,
+                savedCount: response.data.savedCount,
+                locations: response.data.locations,
                 message: response.data.message
             };
         } catch (error) {
@@ -23,16 +23,19 @@ export const WalkMapAPI = {
     },
 
     async getWalkRoute(walkId) {
+        
+        
         try {
             const response = await apiClient.get(`/walk-maps/walks/${walkId}/route`);
-            
+
             return {
-                hasMap: response.data.data.hasMap,
-                mapId: response.data.data.mapId,
-                walkId: response.data.data.walkId,
-                locations: response.data.data.locations
+                hasMap: response.data.hasMap,
+                mapId: response.data.mapId,
+                walkId: response.data.walkId,
+                locations: response.data.locations
             };
         } catch (error) {
+            
             throw new Error(error.response?.data?.message || "Error al obtener ruta");
         }
     },
@@ -66,9 +69,9 @@ export const WalkMapAPI = {
             const response = await apiClient.get(`/walk-maps/walks/${walkId}/availability`);
             
             return {
-                hasMap: response.data.data.hasMap,
-                mapId: response.data.data.mapId,
-                locationCount: response.data.data.locationCount
+                hasMap: response.data.hasMap,
+                mapId: response.data.mapId,
+                locationCount: response.data.locationCount
             };
         } catch (error) {
             throw new Error(error.response?.data?.message || "Error al verificar mapa");
@@ -78,7 +81,7 @@ export const WalkMapAPI = {
     async getChatMessages(walkId) {
         try {
             const response = await apiClient.get(`/chat/walks/${walkId}/messages`);
-            return response.data.data;
+            return response.data;
         } catch (error) {
             throw error;
         }
@@ -95,7 +98,7 @@ export const WalkMapAPI = {
                 message
             });
             
-            return response.data.data;
+            return response.data;
         } catch (error) {
             throw error;
         }
@@ -107,7 +110,7 @@ export const WalkMapAPI = {
                 userId
             });
             
-            return response.data.data;
+            return response.data;
         } catch (error) {
             throw error;
         }
@@ -116,7 +119,7 @@ export const WalkMapAPI = {
     async getUnreadCount(userId) {
         try {
             const response = await apiClient.get(`/chat/users/${userId}/unread-count`);
-            return response.data.data;
+            return response.data;
         } catch (error) {
             throw error;
         }
