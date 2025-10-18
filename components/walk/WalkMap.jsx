@@ -33,7 +33,7 @@ const WalkMap = ({ tripId, walkStatus }) => {
             setLoading(true);
             setError(null);
 
-            const route = await WalkMapController.fetchWalkRoute(tripId);
+            const route = await WalkMapController.getWalkRoute(tripId);
             
             const normalizedPath = route.map(point => ({
                 latitude: parseFloat(point.lat),
