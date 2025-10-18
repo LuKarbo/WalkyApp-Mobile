@@ -63,10 +63,13 @@ const WalkView = () => {
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
             <View style={styles.content}>
                 <View style={styles.mapSection}>
-                    <WalkMap 
-                        tripId={tripId} 
-                        walkStatus={walkData?.status} 
-                    />
+                    {walkData ? (
+                        <WalkMap tripId={tripId} walkStatus={walkData?.status} />
+                    ) : (
+                        <View style={{ height: 400, justifyContent: "center", alignItems: "center" }}>
+                            <ActivityIndicator size="large" color="#10b981" />
+                        </View>
+                    )}
                 </View>
 
                 <View style={styles.dataSection}>

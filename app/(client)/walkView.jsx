@@ -13,7 +13,6 @@ import WalkData from "../../components/walk/WalkData";
 import WalkMap from "../../components/walk/WalkMap";
 
 const WalkView = () => {
-    
     const { tripId } = useLocalSearchParams();
     const [walkData, setWalkData] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -24,6 +23,7 @@ const WalkView = () => {
     }, [tripId]);
 
     const loadWalkData = async () => {
+
         if (!tripId) {
             setLoading(false);
             return;
@@ -34,8 +34,7 @@ const WalkView = () => {
             const data = await WalksController.fetchWalkDetails(tripId);
             setWalkData(data);
         } catch (err) {
-            setError('Error cargando datos del paseo: ' + err.message);
-            
+            setError("Error cargando datos del paseo: " + err.message);
         } finally {
             setLoading(false);
         }
@@ -63,10 +62,14 @@ const WalkView = () => {
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
             <View style={styles.content}>
                 <View style={styles.mapSection}>
-                    <WalkMap 
-                        tripId={tripId} 
-                        walkStatus={walkData?.status} 
-                    />
+                    {walkData ? (
+                        <WalkMap tripId={tripId} walkStatus={walkData?.status} />
+                    ) : (
+                        <View style={{ height: 400, justifyContent: "center", alignItems: "center" }}>
+                            <ActivityIndicator size="large" color="#10b981" />
+                            <Text>Cargando mapa...</Text>
+                        </View>
+                    )}
                 </View>
 
                 <View style={styles.dataSection}>

@@ -321,10 +321,10 @@ const WalkerWalksScreen = () => {
         }
     };
 
-    const handleViewWalk = (walkId) => {
+    const handleViewWalk = (tripId) => {
         router.push({
             pathname: '/walkView',
-            params: { walkId }
+            params: { tripId }
         });
     };
 

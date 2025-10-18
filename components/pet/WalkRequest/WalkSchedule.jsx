@@ -12,8 +12,8 @@ import {
     View
 } from 'react-native';
 import { useToast } from '../../../backend/Context/ToastContext';
-import { useUser } from '../../../backend/Context/UserContext';
 import { WalksController } from '../../../backend/Controllers/WalksController';
+import { useAuth } from '../../../hooks/useAuth';
 import PriceSummary from './PriceSummary';
 
 export default function WalkSchedule({ 
@@ -30,7 +30,7 @@ export default function WalkSchedule({
     const [showTimePicker, setShowTimePicker] = useState(false);
     const [submitting, setSubmitting] = useState(false);
 
-    const user = useUser();
+    const { user } = useAuth();
     const userId = user?.id;
     const { showSuccess, showError, showWarning } = useToast();
     
