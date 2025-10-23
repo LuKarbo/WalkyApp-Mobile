@@ -103,5 +103,13 @@ export const WalksDataAccess = {
         } catch (error) {
             throw error;
         }
+    },
+
+    async getWalkReceipt(walkId) {
+        try {
+            return await WalksAPI.getWalkReceipt(walkId);
+        } catch (error) {
+            throw error;
+        }
     }
 };

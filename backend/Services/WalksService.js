@@ -10,6 +10,7 @@ export const WalksService = {
                 dogName: walk.dogName,
                 walker: walk.walkerName,
                 startTime: walk.startTime,
+                startAddress: walk.startAddress,
                 status: walk.status
             }));
 
@@ -44,7 +45,8 @@ export const WalksService = {
                     actualStartTime: walk.actualStartTime,
                     endTime: walk.endTime,
                     actualEndTime: walk.actualEndTime,
-                    duration: walk.duration
+                    duration: walk.duration,
+                    startAddress: walk.startAddress
                 },
                 status: walk.status,
                 metrics: {
@@ -76,6 +78,7 @@ export const WalksService = {
                 walker: walk.walkerName,
                 startTime: walk.startTime,
                 actualStartTime: walk.actualStartTime,
+                startAddress: walk.startAddress,
                 status: walk.status,
                 duration: walk.duration || 0
             }));
@@ -93,6 +96,7 @@ export const WalksService = {
                 dogName: walk.dogName,
                 walker: walk.walkerName,
                 scheduledTime: walk.startTime,
+                startAddress: walk.startAddress,
                 status: walk.status
             }));
         } catch (error) {
@@ -109,6 +113,7 @@ export const WalksService = {
                 dogName: walk.dogName,
                 walker: walk.walkerName,
                 scheduledTime: walk.startTime,
+                startAddress: walk.startAddress,
                 status: walk.status,
                 totalPrice: walk.totalPrice
             }));
@@ -126,6 +131,7 @@ export const WalksService = {
                 dogName: walk.dogName,
                 walker: walk.walkerName,
                 requestedTime: walk.startTime,
+                startAddress: walk.startAddress,
                 status: walk.status,
                 totalPrice: walk.totalPrice
             }));
@@ -150,6 +156,7 @@ export const WalksService = {
                 actualStartTime: walk.actualStartTime,
                 endTime: walk.endTime,
                 actualEndTime: walk.actualEndTime,
+                startAddress: walk.startAddress,
                 status: walk.status,
                 duration: walk.duration,
                 distance: walk.distance,
@@ -181,6 +188,7 @@ export const WalksService = {
                 actualStartTime: walk.actualStartTime,
                 endTime: walk.endTime,
                 actualEndTime: walk.actualEndTime,
+                startAddress: walk.startAddress,
                 status: walk.status,
                 duration: walk.duration,
                 distance: walk.distance,
@@ -206,6 +214,9 @@ export const WalksService = {
             if (!walkRequestData.scheduledDateTime) {
                 throw new Error("Scheduled date and time is required");
             }
+            if (!walkRequestData.startAddress || walkRequestData.startAddress.trim() === '') {
+                throw new Error("Start address is required");
+            }
             if (!walkRequestData.totalPrice || walkRequestData.totalPrice <= 0) {
                 throw new Error("Total price must be greater than 0");
             }
@@ -218,6 +229,7 @@ export const WalksService = {
                 ownerId: newWalkRequest.ownerId,
                 petIds: newWalkRequest.petIds,
                 scheduledDateTime: newWalkRequest.startTime,
+                startAddress: newWalkRequest.startAddress,
                 description: newWalkRequest.notes,
                 totalPrice: newWalkRequest.totalPrice,
                 status: newWalkRequest.status,
@@ -322,6 +334,19 @@ export const WalksService = {
                 status: updatedWalk.status,
                 updatedAt: updatedWalk.updatedAt
             };
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    async getWalkReceipt(walkId) {
+        try {
+            if (!walkId) {
+                throw new Error("Walk ID is required");
+            }
+
+            const receipt = await WalksDataAccess.getWalkReceipt(walkId);
+            return receipt;
         } catch (error) {
             throw error;
         }

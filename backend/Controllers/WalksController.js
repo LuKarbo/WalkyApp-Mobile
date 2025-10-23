@@ -63,5 +63,9 @@ export const WalksController = {
 
     async finishWalk(walkId) {
         return await WalksService.changeWalkStatus(walkId, 'Finalizado');
+    },
+
+    async getWalkReceipt(walkId) {
+        return await WalksService.getWalkReceipt(walkId);
     }
 };

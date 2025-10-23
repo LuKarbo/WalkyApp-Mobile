@@ -179,5 +179,14 @@ export const WalksAPI = {
         } catch (error) {
             throw error;
         }
+    },
+
+    async getWalkReceipt(walkId) {
+        try {
+            const response = await apiClient.get(`/walks/${walkId}/receipt`);
+            return response.data.receipt;
+        } catch (error) {
+            throw error;
+        }
     }
 };

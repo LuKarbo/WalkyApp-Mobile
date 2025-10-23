@@ -6,7 +6,7 @@ import {
     View,
 } from 'react-native';
 
-export default function MyTripsCardComponent({ trip, onViewTrip, onCancelTrip, onPayTrip, onCreateReview, onViewReview }) {
+export default function MyTripsCardComponent({ trip, onViewTrip, onCancelTrip, onPayTrip, onCreateReview, onViewReview, onViewReceipt }) {
     const getStatusColor = (status) => {
         switch (status) {
             case "Solicitado":
@@ -107,9 +107,18 @@ export default function MyTripsCardComponent({ trip, onViewTrip, onCancelTrip, o
                     </Text>
                 </View>
 
-                {(trip.duration || trip.distance) && (
+                {trip.startAddress && (
                     <View style={styles.infoCard}>
                         <Text style={styles.infoIcon}>📍</Text>
+                        <Text style={styles.infoText} numberOfLines={2}>
+                            {trip.startAddress}
+                        </Text>
+                    </View>
+                )}
+
+                {(trip.duration || trip.distance) && (
+                    <View style={styles.infoCard}>
+                        <Text style={styles.infoIcon}>🏃</Text>
                         <Text style={styles.infoText}>
                             {trip.duration && `${trip.duration} min`}
                             {trip.duration && trip.distance && ' • '}
@@ -143,6 +152,15 @@ export default function MyTripsCardComponent({ trip, onViewTrip, onCancelTrip, o
                         style={[styles.button, styles.viewButton]}
                     >
                         <Text style={styles.viewButtonText}>👁️ Ver</Text>
+                    </TouchableOpacity>
+                )}
+                
+                {canViewTrip(trip.status) && (
+                    <TouchableOpacity
+                        onPress={() => onViewReceipt(trip.id)}
+                        style={[styles.button, styles.receiptButton]}
+                    >
+                        <Text style={styles.receiptButtonText}>📄 Recibo</Text>
                     </TouchableOpacity>
                 )}
                 
@@ -311,6 +329,15 @@ const styles = StyleSheet.create({
     },
     viewButtonText: {
         color: '#3b82f6',
+        fontSize: 12,
+        fontWeight: '700',
+    },
+    receiptButton: {
+        borderColor: '#8b5cf6',
+        backgroundColor: 'transparent',
+    },
+    receiptButtonText: {
+        color: '#8b5cf6',
         fontSize: 12,
         fontWeight: '700',
     },

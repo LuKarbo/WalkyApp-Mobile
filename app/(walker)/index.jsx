@@ -14,6 +14,7 @@ import { ReviewsController } from "../../backend/Controllers/ReviewsController";
 import { WalksController } from "../../backend/Controllers/WalksController";
 import { useAuth } from "../../hooks/useAuth";
 
+import ReceiptModal from "../../components/client/MyWalks/modals/ReceiptModal";
 import ViewReviewModal from "../../components/client/MyWalks/modals/ViewReviewModal";
 import WalkerWalksCard from "../../components/walker/WalkerWalks/components/WalkerWalksCard";
 import WalkerWalksHeader from "../../components/walker/WalkerWalks/components/WalkerWalksHeader";
@@ -42,11 +43,14 @@ const WalkerWalksScreen = () => {
     const [showStartWalkModal, setShowStartWalkModal] = useState(false);
     const [showFinishWalkModal, setShowFinishWalkModal] = useState(false);
     const [showViewReviewModal, setShowViewReviewModal] = useState(false);
+    const [showReceiptModal, setShowReceiptModal] = useState(false);
 
     const [selectedWalk, setSelectedWalk] = useState(null);
     const [actionLoading, setActionLoading] = useState(false);
     const [walkToViewReview, setWalkToViewReview] = useState(null);
     const [currentReview, setCurrentReview] = useState(null);
+    const [currentReceipt, setCurrentReceipt] = useState(null);
+    const [receiptLoading, setReceiptLoading] = useState(false);
 
     const MAX_ACCEPTED_WALKS = 5;
     const MAX_ACTIVE_WALKS = 2;
@@ -347,6 +351,25 @@ const WalkerWalksScreen = () => {
         }
     };
 
+    const handleViewReceipt = async (walkId) => {
+        try {
+            setReceiptLoading(true);
+            const receipt = await WalksController.getWalkReceipt(walkId);
+            setCurrentReceipt(receipt);
+            setShowReceiptModal(true);
+        } catch (err) {
+            setError('Error loading receipt: ' + err.message);
+            showError('No se pudo cargar el recibo');
+        } finally {
+            setReceiptLoading(false);
+        }
+    };
+
+    const handleCloseReceiptModal = () => {
+        setShowReceiptModal(false);
+        setCurrentReceipt(null);
+    };
+
     const handleCloseViewReviewModal = () => {
         setShowViewReviewModal(false);
         setWalkToViewReview(null);
@@ -490,6 +513,7 @@ const WalkerWalksScreen = () => {
                                 onViewWalk={handleViewWalk}
                                 onFinishWalk={handleFinishWalk}
                                 onViewReview={handleViewReview}
+                                onViewReceipt={handleViewReceipt}
                                 canAcceptMore={canAcceptWalk()}
                                 canStartMore={canStartWalk()}
                             />
@@ -541,6 +565,13 @@ const WalkerWalksScreen = () => {
                 onClose={handleCloseViewReviewModal}
                 reviewData={currentReview}
                 tripData={walkToViewReview}
+            />
+
+            <ReceiptModal 
+                visible={showReceiptModal}
+                onClose={handleCloseReceiptModal}
+                receipt={currentReceipt}
+                loading={receiptLoading}
             />
         </View>
     );

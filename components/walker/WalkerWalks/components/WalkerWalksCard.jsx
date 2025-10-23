@@ -11,6 +11,7 @@ const WalkerWalksCard = ({
     onViewWalk,
     onFinishWalk,
     onViewReview,
+    onViewReceipt,
     canAcceptMore = true,
     canStartMore = true,
 }) => {
@@ -201,6 +202,21 @@ const WalkerWalksCard = ({
                             </Text>
                         </TouchableOpacity>
 
+                        <TouchableOpacity
+                            style={[styles.actionButton, styles.receiptButton]}
+                            onPress={() => onViewReceipt(walk.id)}
+                        >
+                            <Ionicons
+                                name="receipt-outline"
+                                size={14}
+                                color="#8b5cf6"
+                                style={styles.buttonIcon}
+                            />
+                            <Text style={[styles.actionButtonText, styles.receiptButtonText]}>
+                                Recibo
+                            </Text>
+                        </TouchableOpacity>
+
                         {walk.hasReview && (
                             <TouchableOpacity
                                 style={[styles.actionButton, styles.viewReviewButton]}
@@ -309,6 +325,20 @@ const WalkerWalksCard = ({
                         {walk.endTime && ` - ${format(new Date(walk.endTime), "h:mm a")}`}
                     </Text>
                 </View>
+
+                {walk.startAddress && (
+                    <View style={styles.detailItem}>
+                        <Ionicons
+                            name="location-outline"
+                            size={14}
+                            color="#8b5cf6"
+                            style={styles.detailIcon}
+                        />
+                        <Text style={styles.detailText} numberOfLines={2}>
+                            {walk.startAddress}
+                        </Text>
+                    </View>
+                )}
 
                 {(walk.duration || walk.distance) && (
                     <View style={styles.detailItem}>
@@ -584,6 +614,13 @@ const styles = StyleSheet.create({
     },
     viewButtonText: {
         color: "#10b981",
+    },
+    receiptButton: {
+        backgroundColor: "transparent",
+        borderColor: "#8b5cf6",
+    },
+    receiptButtonText: {
+        color: "#8b5cf6",
     },
     finishButton: {
         backgroundColor: "#ef4444",

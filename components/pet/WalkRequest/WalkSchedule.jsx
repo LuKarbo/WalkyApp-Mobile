@@ -25,6 +25,7 @@ export default function WalkSchedule({
 }) {
     const [date, setDate] = useState(null);
     const [time, setTime] = useState(null);
+    const [startAddress, setStartAddress] = useState('');
     const [description, setDescription] = useState('');
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [showTimePicker, setShowTimePicker] = useState(false);
@@ -72,6 +73,11 @@ export default function WalkSchedule({
             return;
         }
 
+        if (!startAddress || startAddress.trim() === '') {
+            showWarning('Debe ingresar la dirección de inicio del paseo');
+            return;
+        }
+
         try {
             setSubmitting(true);
 
@@ -85,6 +91,7 @@ export default function WalkSchedule({
                 ownerId: userId,
                 petIds: selectedPets.map(pet => pet.id),
                 scheduledDateTime: scheduledDateTime,
+                startAddress: startAddress.trim(),
                 description: description,
                 totalPrice: finalPrice,
                 status: 'Pending'
@@ -203,36 +210,64 @@ export default function WalkSchedule({
                         <Text style={styles.label}>
                             Fecha <Text style={styles.required}>*</Text>
                         </Text>
-                        <TouchableOpacity
-                            style={[
-                                styles.dateButton,
-                                !date && styles.dateButtonEmpty
-                            ]}
-                            onPress={() => setShowDatePicker(true)}
-                        >
-                            <Text style={[
-                                styles.dateButtonText,
-                                !date && { color: '#ef4444', fontStyle: 'italic' }
-                            ]}>
-                                {date 
-                                    ? `📅 ${date?.toLocaleDateString('es-ES', {
-                                        day: '2-digit',
-                                        month: 'long',
-                                        year: 'numeric',
-                                    })}`
-                                    : '📅 Seleccionar Fecha del paseo'
-                                }
-                            </Text>
-                        </TouchableOpacity>
-
-                        {showDatePicker && (
-                            <DateTimePicker
-                                value={date || new Date()}
-                                mode="date"
-                                display="default"
-                                onChange={onDateChange}
-                                minimumDate={new Date()}
+                        
+                        {Platform.OS === 'web' ? (
+                            <input
+                                type="date"
+                                value={date ? date.toISOString().split('T')[0] : ''}
+                                onChange={(e) => {
+                                    if (e.target.value) {
+                                        setDate(new Date(e.target.value + 'T00:00:00'));
+                                    }
+                                }}
+                                min={new Date().toISOString().split('T')[0]}
+                                style={{
+                                    backgroundColor: !date ? '#fef2f2' : '#f9fafb',
+                                    borderWidth: !date ? '1.5px' : '1px',
+                                    borderStyle: 'solid',
+                                    borderColor: !date ? '#fca5a5' : '#e5e7eb',
+                                    borderRadius: '8px',
+                                    padding: '12px',
+                                    fontSize: '16px',
+                                    color: '#1f2937',
+                                    width: '100%',
+                                    fontFamily: 'system-ui',
+                                }}
                             />
+                        ) : (
+                            <>
+                                <TouchableOpacity
+                                    style={[
+                                        styles.dateButton,
+                                        !date && styles.dateButtonEmpty
+                                    ]}
+                                    onPress={() => setShowDatePicker(true)}
+                                >
+                                    <Text style={[
+                                        styles.dateButtonText,
+                                        !date && { color: '#ef4444', fontStyle: 'italic' }
+                                    ]}>
+                                        {date 
+                                            ? `📅 ${date?.toLocaleDateString('es-ES', {
+                                                day: '2-digit',
+                                                month: 'long',
+                                                year: 'numeric',
+                                            })}`
+                                            : '📅 Seleccionar Fecha del paseo'
+                                        }
+                                    </Text>
+                                </TouchableOpacity>
+
+                                {showDatePicker && (
+                                    <DateTimePicker
+                                        value={date || new Date()}
+                                        mode="date"
+                                        display="default"
+                                        onChange={onDateChange}
+                                        minimumDate={new Date()}
+                                    />
+                                )}
+                            </>
                         )}
                     </View>
 
@@ -240,38 +275,89 @@ export default function WalkSchedule({
                         <Text style={styles.label}>
                             Hora <Text style={styles.required}>*</Text>
                         </Text>
-                        <TouchableOpacity
-                            style={[
-                                styles.dateButton,
-                                !time && styles.dateButtonEmpty
-                            ]}
-                            onPress={() => setShowTimePicker(true)}
-                        >
-                            <Text style={[
-                                styles.dateButtonText,
-                                !time && { color: '#ef4444', fontStyle: 'italic' } 
-                            ]}>
-                                {time 
-                                    ? `⏰ ${time.toLocaleTimeString('es-ES', {
-                                        hour: '2-digit',
-                                        minute: '2-digit',
-                                    })}`
-                                    : '⏰ Seleccionar hora del paseo'
-                                }
-                            </Text>
-                        </TouchableOpacity>
-
-                        {showTimePicker && (
-                            <DateTimePicker
-                                value={time || new Date()}
-                                mode="time"
-                                display="default"
-                                onChange={onTimeChange}
+                        
+                        {Platform.OS === 'web' ? (
+                            <input
+                                type="time"
+                                value={time ? time.toTimeString().split(' ')[0].substring(0, 5) : ''}
+                                onChange={(e) => {
+                                    if (e.target.value) {
+                                        const [hours, minutes] = e.target.value.split(':');
+                                        const newTime = new Date();
+                                        newTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+                                        setTime(newTime);
+                                    }
+                                }}
+                                style={{
+                                    backgroundColor: !time ? '#fef2f2' : '#f9fafb',
+                                    borderWidth: !time ? '1.5px' : '1px',
+                                    borderStyle: 'solid',
+                                    borderColor: !time ? '#fca5a5' : '#e5e7eb',
+                                    borderRadius: '8px',
+                                    padding: '12px',
+                                    fontSize: '16px',
+                                    color: '#1f2937',
+                                    width: '100%',
+                                    fontFamily: 'system-ui',
+                                }}
                             />
+                        ) : (
+                            <>
+                                <TouchableOpacity
+                                    style={[
+                                        styles.dateButton,
+                                        !time && styles.dateButtonEmpty
+                                    ]}
+                                    onPress={() => setShowTimePicker(true)}
+                                >
+                                    <Text style={[
+                                        styles.dateButtonText,
+                                        !time && { color: '#ef4444', fontStyle: 'italic' } 
+                                    ]}>
+                                        {time 
+                                            ? `⏰ ${time.toLocaleTimeString('es-ES', {
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                            })}`
+                                            : '⏰ Seleccionar hora del paseo'
+                                        }
+                                    </Text>
+                                </TouchableOpacity>
+
+                                {showTimePicker && (
+                                    <DateTimePicker
+                                        value={time || new Date()}
+                                        mode="time"
+                                        display="default"
+                                        onChange={onTimeChange}
+                                    />
+                                )}
+                            </>
                         )}
                     </View>
                 </View>
 
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Dirección de Inicio</Text>
+                    <View style={styles.inputContainer}>
+                        <Text style={styles.label}>
+                            Dirección <Text style={styles.required}>*</Text>
+                        </Text>
+                        <TextInput
+                            style={[
+                                styles.input,
+                                !startAddress && styles.inputEmpty
+                            ]}
+                            placeholder="Ej: Av. Corrientes 1234, CABA"
+                            value={startAddress}
+                            onChangeText={setStartAddress}
+                            placeholderTextColor="#9ca3af"
+                        />
+                        <Text style={styles.helperText}>
+                            📍 Ingresa la dirección donde comenzará el paseo
+                        </Text>
+                    </View>
+                </View>
 
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Descripción (opcional)</Text>
@@ -478,6 +564,26 @@ const styles = StyleSheet.create({
     },
     dateButtonTextPlaceholder: {
         color: '#9ca3af',
+        fontStyle: 'italic',
+    },
+    input: {
+        backgroundColor: '#f9fafb',
+        borderWidth: 1,
+        borderColor: '#e5e7eb',
+        borderRadius: 8,
+        padding: 12,
+        fontSize: 16,
+        color: '#1f2937',
+    },
+    inputEmpty: {
+        borderColor: '#fca5a5',
+        borderWidth: 1.5,
+        backgroundColor: '#fef2f2',
+    },
+    helperText: {
+        fontSize: 12,
+        color: '#6b7280',
+        marginTop: 6,
         fontStyle: 'italic',
     },
     textArea: {

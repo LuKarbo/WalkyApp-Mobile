@@ -15,6 +15,7 @@ import MyTripsFilter from '../../components/client/MyWalks/components/MyTripsFil
 import MyTripsHeaderComponent from '../../components/client/MyWalks/components/MyTripsHeaderComponent';
 import CancelWalkModal from '../../components/client/MyWalks/modals/CancelWalkModal';
 import PaymentModal from '../../components/client/MyWalks/modals/PaymentModal';
+import ReceiptModal from '../../components/client/MyWalks/modals/ReceiptModal';
 import ReviewModal from '../../components/client/MyWalks/modals/ReviewModal';
 import ViewReviewModal from '../../components/client/MyWalks/modals/ViewReviewModal';
 import LoadingScreen from '../../components/common/LoadingScreen';
@@ -59,6 +60,10 @@ export default function ClientWalksScreen() {
     const [showViewReviewModal, setShowViewReviewModal] = useState(false);
     const [tripToViewReview, setTripToViewReview] = useState(null);
     const [currentReview, setCurrentReview] = useState(null);
+
+    const [showReceiptModal, setShowReceiptModal] = useState(false);
+    const [currentReceipt, setCurrentReceipt] = useState(null);
+    const [receiptLoading, setReceiptLoading] = useState(false);
 
     const loadTrips = useCallback(async () => {
         if (!userId) return;
@@ -316,6 +321,25 @@ export default function ClientWalksScreen() {
         setCurrentReview(null);
     };
 
+    const handleViewReceipt = async (tripId) => {
+        try {
+            setReceiptLoading(true);
+            const receipt = await WalksController.getWalkReceipt(tripId);
+            setCurrentReceipt(receipt);
+            setShowReceiptModal(true);
+        } catch (err) {
+            setError('Error loading receipt: ' + err.message);
+            showError('No se pudo cargar el recibo');
+        } finally {
+            setReceiptLoading(false);
+        }
+    };
+
+    const handleCloseReceiptModal = () => {
+        setShowReceiptModal(false);
+        setCurrentReceipt(null);
+    };
+
 const handleViewTrip = (tripId) => {
     router.push({
         pathname: '/walkView',
@@ -391,6 +415,7 @@ const handleViewTrip = (tripId) => {
                         onPayTrip={handlePayTrip}
                         onCreateReview={handleCreateReview}
                         onViewReview={handleViewReview}
+                        onViewReceipt={handleViewReceipt}
                     />
                 )}
                 contentContainerStyle={styles.listContainer}
@@ -431,6 +456,13 @@ const handleViewTrip = (tripId) => {
                 onClose={handleCloseViewReviewModal}
                 reviewData={currentReview}
                 tripData={tripToViewReview}
+            />
+
+            <ReceiptModal 
+                visible={showReceiptModal}
+                onClose={handleCloseReceiptModal}
+                receipt={currentReceipt}
+                loading={receiptLoading}
             />
         </View>
     );
