@@ -105,12 +105,23 @@ export default function ReceiptModal({ visible, onClose, receipt, loading }) {
             </Modal>
         );
     }
-
+    
     const walk = receipt.walk || {};
     const owner = receipt.owner || {};
     const walker = receipt.walker || {};
     const pets = receipt.pets || {};
     const walkerSettings = receipt.walkerSettings || {};
+
+    // Cálculos de precio
+    const totalPrice = parseFloat(walk.totalPrice || 0);
+    const walkPrice = parseFloat(walk.walkPrice || 0);
+    const amountPaid = parseFloat(receipt.amountPaid || 0);
+    const numberOfPets = pets.ids ? pets.ids.length : 0;
+    const pricePerPet = numberOfPets > 0 ? walkPrice / numberOfPets : walkPrice;
+    
+    // Calcular descuento si existe
+    const hadDiscount = walkerSettings.hadDiscount === 1 && walkerSettings.discountPercentage > 0;
+    const discountAmount = hadDiscount ? (walkPrice * walkerSettings.discountPercentage) / 100 : 0;
 
     return (
         <Modal
@@ -187,6 +198,15 @@ export default function ReceiptModal({ visible, onClose, receipt, loading }) {
                                     </Text>
                                 </View>
                             )}
+
+                            {walk.status && (
+                                <View style={styles.infoRow}>
+                                    <Text style={styles.infoLabel}>Estado del Paseo:</Text>
+                                    <Text style={styles.infoValue}>
+                                        {walk.status.charAt(0).toUpperCase() + walk.status.slice(1)}
+                                    </Text>
+                                </View>
+                            )}
                         </View>
 
                         {/* Participantes */}
@@ -205,6 +225,9 @@ export default function ReceiptModal({ visible, onClose, receipt, loading }) {
                                     {walker.phone && (
                                         <Text style={styles.participantDetail}>📱 {walker.phone}</Text>
                                     )}
+                                    {walker.email && (
+                                        <Text style={styles.participantDetail}>✉️ {walker.email}</Text>
+                                    )}
                                 </View>
                             </View>
 
@@ -220,6 +243,9 @@ export default function ReceiptModal({ visible, onClose, receipt, loading }) {
                                     {owner.phone && (
                                         <Text style={styles.participantDetail}>📱 {owner.phone}</Text>
                                     )}
+                                    {owner.email && (
+                                        <Text style={styles.participantDetail}>✉️ {owner.email}</Text>
+                                    )}
                                 </View>
                             </View>
 
@@ -230,7 +256,7 @@ export default function ReceiptModal({ visible, onClose, receipt, loading }) {
                                     </View>
                                     <View style={styles.participantInfo}>
                                         <Text style={styles.participantLabel}>
-                                            {pets.names.split(',').length > 1 ? 'Mascotas' : 'Mascota'}
+                                            {numberOfPets > 1 ? `Mascotas (${numberOfPets})` : 'Mascota'}
                                         </Text>
                                         <Text style={styles.participantName}>
                                             {pets.names}
@@ -245,7 +271,7 @@ export default function ReceiptModal({ visible, onClose, receipt, loading }) {
                             <View style={styles.section}>
                                 <Text style={styles.sectionTitle}>📊 Detalles del Paseo</Text>
                                 
-                                {walk.duration && (
+                                {walk.duration ? (
                                     <View style={styles.detailCard}>
                                         <Ionicons name="time-outline" size={24} color="#3b82f6" />
                                         <View style={styles.detailInfo}>
@@ -255,15 +281,35 @@ export default function ReceiptModal({ visible, onClose, receipt, loading }) {
                                             </Text>
                                         </View>
                                     </View>
+                                ) : (
+                                    <View style={styles.detailCard}>
+                                        <Ionicons name="time-outline" size={24} color="#9ca3af" />
+                                        <View style={styles.detailInfo}>
+                                            <Text style={styles.detailLabel}>Duración</Text>
+                                            <Text style={[styles.detailValue, { color: '#9ca3af' }]}>
+                                                No registrada
+                                            </Text>
+                                        </View>
+                                    </View>
                                 )}
 
-                                {walk.distance && (
+                                {walk.distance ? (
                                     <View style={styles.detailCard}>
                                         <Ionicons name="navigate-outline" size={24} color="#10b981" />
                                         <View style={styles.detailInfo}>
                                             <Text style={styles.detailLabel}>Distancia Recorrida</Text>
                                             <Text style={styles.detailValue}>
                                                 {formatDistance(walk.distance)}
+                                            </Text>
+                                        </View>
+                                    </View>
+                                ) : (
+                                    <View style={styles.detailCard}>
+                                        <Ionicons name="navigate-outline" size={24} color="#9ca3af" />
+                                        <View style={styles.detailInfo}>
+                                            <Text style={styles.detailLabel}>Distancia Recorrida</Text>
+                                            <Text style={[styles.detailValue, { color: '#9ca3af' }]}>
+                                                No registrada
                                             </Text>
                                         </View>
                                     </View>
@@ -275,33 +321,31 @@ export default function ReceiptModal({ visible, onClose, receipt, loading }) {
                         <View style={styles.section}>
                             <Text style={styles.sectionTitle}>💰 Desglose de Precio</Text>
                             
-                            {walk.pricePerPet && pets.ids && (
+                            {numberOfPets > 0 && (
                                 <View style={styles.priceRow}>
                                     <Text style={styles.priceLabel}>
-                                        Precio por mascota (x{pets.ids.length})
+                                        Precio por mascota (x{numberOfPets})
                                     </Text>
                                     <Text style={styles.priceValue}>
-                                        {formatCurrency(walk.pricePerPet)}
+                                        {formatCurrency(pricePerPet)}
                                     </Text>
                                 </View>
                             )}
 
-                            {walk.subtotal && (
-                                <View style={styles.priceRow}>
-                                    <Text style={styles.priceLabel}>Subtotal</Text>
-                                    <Text style={styles.priceValue}>
-                                        {formatCurrency(walk.subtotal)}
-                                    </Text>
-                                </View>
-                            )}
+                            <View style={styles.priceRow}>
+                                <Text style={styles.priceLabel}>Precio del Paseo</Text>
+                                <Text style={styles.priceValue}>
+                                    {formatCurrency(walkPrice)}
+                                </Text>
+                            </View>
 
-                            {walkerSettings.hadDiscount === 1 && walkerSettings.discountPercentage > 0 && (
+                            {hadDiscount && (
                                 <View style={styles.priceRow}>
                                     <Text style={[styles.priceLabel, styles.discountLabel]}>
                                         Descuento ({walkerSettings.discountPercentage}%)
                                     </Text>
                                     <Text style={[styles.priceValue, styles.discountValue]}>
-                                        -{formatCurrency((walk.subtotal * walkerSettings.discountPercentage) / 100)}
+                                        -{formatCurrency(discountAmount)}
                                     </Text>
                                 </View>
                             )}
@@ -311,7 +355,7 @@ export default function ReceiptModal({ visible, onClose, receipt, loading }) {
                             <View style={styles.totalRow}>
                                 <Text style={styles.totalLabel}>Total Pagado</Text>
                                 <Text style={styles.totalValue}>
-                                    {formatCurrency(receipt.amountPaid)}
+                                    {formatCurrency(amountPaid)}
                                 </Text>
                             </View>
                         </View>
@@ -440,7 +484,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#ffffff',
         borderTopLeftRadius: 24,
         borderTopRightRadius: 24,
-        maxHeight: '90%',
+        height: '90%', // Cambiado de maxHeight a height
         shadowColor: '#000',
         shadowOffset: { width: 0, height: -4 },
         shadowOpacity: 0.1,
@@ -474,6 +518,8 @@ const styles = StyleSheet.create({
     header: {
         backgroundColor: '#f9fafb',
         padding: 20,
+        borderTopLeftRadius: 24,
+        borderTopRightRadius: 24,
         borderBottomWidth: 1,
         borderBottomColor: '#e5e7eb',
     },
@@ -518,6 +564,7 @@ const styles = StyleSheet.create({
     },
     scrollView: {
         flex: 1,
+        backgroundColor: '#ffffff',
     },
     section: {
         padding: 20,
@@ -526,6 +573,7 @@ const styles = StyleSheet.create({
     },
     lastSection: {
         borderBottomWidth: 0,
+        paddingBottom: 100, 
     },
     sectionTitle: {
         fontSize: 16,
@@ -681,8 +729,11 @@ const styles = StyleSheet.create({
     },
     footer: {
         padding: 20,
+        backgroundColor: '#ffffff',
         borderTopWidth: 1,
         borderTopColor: '#e5e7eb',
+        borderBottomLeftRadius: 0,
+        borderBottomRightRadius: 0,
     },
     closeButton: {
         backgroundColor: '#6366f1',
