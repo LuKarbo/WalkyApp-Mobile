@@ -13,7 +13,8 @@ module.exports = {
     extra: {
       eas: {
         projectId: "21c881a3-756f-46c1-90dc-c86486d69127"
-      }
+      },
+      API_BASE_URL: process.env.API_BASE_URL
     },
     
     splash: {

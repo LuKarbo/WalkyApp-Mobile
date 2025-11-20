@@ -1,50 +1,70 @@
-# Welcome to your Expo app 👋
+# **WalkyAPP**
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**Descripción:** Proyecto mobile de Walky para la gestión de paseos de mascotas (UI, consumo de API y control de sesión), ademas de aportar de forma exclusiva la funcionalidad de rastreo GPS.
+El código contiene la app (rutas y pantallas), componentes reutilizables, un cliente API para comunicarse con un backend remoto y utilidades comunes.
 
-## Get started
+**Rápido — Ejecutar localmente**
 
-1. Install dependencies
+- **Instalar dependencias:** `npm install`
+- **Configurar entorno:** copia `./.env.example` a `./.env` y ajusta `API_BASE_URL` si hace falta. El proyecto ya incluye `app.config.js` que carga `dotenv` y expone `API_BASE_URL` en `expo.extra`.
+- **Iniciar Metro / Expo:** `npm run start` (o `npx expo start`)
+- **Abrir en dispositivo/emulador:**
+  - Android: `npm run android`
+  - iOS: `npm run ios`
+  - Web: `npm run web`
 
-   ```bash
-   npm install
-   ```
+**Scripts disponibles**
 
-2. Start the app
+- **`start`**: `expo start` — inicia Metro/Expo.
+- **`android`**: `expo start --android` — lanza en Android/emulador.
+- **`ios`**: `expo start --ios` — lanza en iOS/simulador.
+- **`web`**: `expo start --web` — prueba en web.
+- **`reset-project`**: `node ./scripts/reset-project.js` — (script incluido) desplaza el starter a `app-example` y deja la carpeta `app` vacía para empezar desde cero.
+- **`lint`**: `expo lint` — analiza con ESLint.
 
-   ```bash
-   npx expo start
-   ```
+**Entorno y variables**
 
-In the output, you'll find options to open the app in a
+- **Archivo de ejemplo:** `./.env.example` (contiene `API_BASE_URL`).
+- **Ignorado por git:** `.env` está listado en `.gitignore`.
+- **Dónde se usa:** `app.config.js` carga `process.env.API_BASE_URL` y lo expone como `expo.extra.API_BASE_URL`. En runtime `backend/config/ApiClient.js` obtiene la URL desde `expo-constants` (`Constants.manifest.extra.API_BASE_URL`) o `process.env.API_BASE_URL`.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+**Lenguajes y frameworks**
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- **Lenguajes:** JavaScript (ESNext), JSX. Hay configuración relacionada con TypeScript (`tsconfig.json` y dependencias de tipo) pero el código principal está en JS/JSX.
+- **Frameworks/plataformas:** Expo SDK (universal: iOS / Android / Web), React, React Native.
 
-## Get a fresh project
+**Arquitectura y organización de carpetas**
 
-When you're ready, run:
+- **`app/`**: código de la aplicación (rutas y pantallas) — usa file-based routing de `expo-router`.
+- **`components/`**: componentes UI reutilizables (separados por dominio: `auth`, `client`, `pet`, `walker`, `common`, `walk`).
+- **`assets/`**: imágenes y recursos estáticos.
+- **`backend/`**: capa cliente que organiza el acceso al backend remoto (NO es el servidor). Dentro contiene:
+  - `API/` — wrappers de API (ej. `AuthAPI.js`, `WalksAPI.js`) que llaman a `backend/config/ApiClient.js`.
+  - `config/` — configuración compartida (ej. `ApiClient.js`).
+  - `Controllers/` — lógica para transformar/coordinar llamadas (`AuthController.js`, `PetsController.js`, ...).
+  - `Services/` — lógica de negocio y orquestación usada por los controladores.
+  - `DataAccess/` — funciones de acceso a datos remotos (llamadas CRUD a la API).
+  - `Context/` — providers React (`UserContext.jsx`, `ToastContext.jsx`).
+  - `System/` — utilidades del sistema (ej. `GPSService.js`).
+- **`hooks/`**: hooks personalizados (`useAuth.js`, `useToast.js`).
+- **`utils/`**: constantes, formateadores y validadores.
+- **`android/`**: proyecto Android (generado por Expo / EAS) — incluye `gradle` y configuración nativa.
 
-```bash
-npm run reset-project
-```
+**Cliente API y sesión**
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+- **`backend/config/ApiClient.js`**: cliente HTTP que monta la URL base desde `expo-constants` o `process.env`, añade `Content-Type: application/json`, y gestiona token con `@react-native-async-storage/async-storage` (`setToken`, `getToken`, `removeToken`).
+- **Uso:** las funciones en `backend/API/*.js` usan ese cliente para todas las llamadas REST (login, walks, pets, reviews, etc.).
 
-## Learn more
+**Librerías principales**
 
-To learn more about developing your project with Expo, look at the following resources:
+- `expo`, `expo-router`, `expo-constants`, `expo-location`, `expo-task-manager`
+- `react`, `react-native`, `react-dom`, `react-native-web`
+- `@react-native-async-storage/async-storage`, `react-navigation` (paquetes relacionados)
+- `react-native-maps`, `react-native-paper`, `react-native-reanimated`, `react-native-gesture-handler`
+- `dotenv`, `date-fns`, `@expo/vector-icons`
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+**Puntos importantes / Notas operativas**
 
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- Después de cambiar `./.env`, reinicia Metro/Expo para que `app.config.js` vuelva a leer las variables y las inyecte en `expo.extra`.
+- `./backend/config/ApiClient.js` usa `Constants.manifest.extra.API_BASE_URL` en entornos Expo clásicos. Si usas un build nativo o EAS, asegúrate de que `expo.extra` esté disponible en la configuración correspondiente.
+- `./.env` no debe subirse al repositorio. Usa `./.env.example` como plantilla.
