@@ -12,7 +12,7 @@ module.exports = {
     userInterfaceStyle: "light",
     extra: {
       eas: {
-        projectId: "21c881a3-756f-46c1-90dc-c86486d69127"
+        projectId: "c2cb8500-4524-44fa-9a53-58f0947619e3"
       },
       API_BASE_URL: process.env.API_BASE_URL
     },
@@ -43,7 +43,7 @@ module.exports = {
     },
     android: {
       adaptiveIcon: {
-        foregroundImage: "./assets/adaptive-icon.png",
+        foregroundImage: "./assets/android-icon-background.png",
         backgroundColor: "#6366f1"
       },
       package: "com.walkyapp.walkyapp",
