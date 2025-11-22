@@ -43,7 +43,7 @@ module.exports = {
     },
     android: {
       adaptiveIcon: {
-        foregroundImage: "./assets/android-icon-background.png",
+        foregroundImage: "./assets/images/android-icon-background.png",
         backgroundColor: "#6366f1"
       },
       package: "com.walkyapp.walkyapp",
