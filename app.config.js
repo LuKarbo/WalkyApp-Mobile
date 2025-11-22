@@ -8,7 +8,7 @@ module.exports = {
     scheme: "walkyapp",
     platforms: ["ios", "android", "web"],
     orientation: "portrait",
-    icon: "./assets/icon.png",
+    icon: "./assets/images/icon.png",
     userInterfaceStyle: "light",
     extra: {
       eas: {
@@ -18,7 +18,7 @@ module.exports = {
     },
     
     splash: {
-      image: "./assets/splash.png",
+      image: "./assets/images/splash-icon.png",
       resizeMode: "contain",
       backgroundColor: "#6366f1"
     },
