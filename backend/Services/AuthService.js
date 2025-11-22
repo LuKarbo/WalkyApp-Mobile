@@ -2,12 +2,9 @@ import { AuthDataAccess } from "../DataAccess/AuthDataAccess.js";
 
 export const AuthService = {
     async login(credentials) {
-        // Validaciones básicas
+        
         if (!credentials.email || !credentials.email.includes("@")) {
             throw new Error("Email inválido");
-        }
-        if (!credentials.password || credentials.password.length < 8) {
-            throw new Error("Contraseña demasiado corta");
         }
 
         const user = await AuthDataAccess.login(credentials);

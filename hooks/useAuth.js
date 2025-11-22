@@ -23,15 +23,14 @@ export const AuthProvider = ({ children }) => {
         const inAuthGroup = segments[0] === '(auth)';
         const inClientGroup = segments[0] === '(client)';
         const inWalkerGroup = segments[0] === '(walker)';
+        const inPetGroup = segments[0] === '(pet)';
 
         if (!user && !inAuthGroup) {
-            
             router.replace('/(auth)/login');
-        } else if (user) {
-            
-            if (user.role === 'client' && !inClientGroup) {
+        } else if (user && !isLoading) {
+            if (user.role === 'client' && !inClientGroup && !inPetGroup && !inAuthGroup) {
                 router.replace('/(client)');
-            } else if (user.role === 'walker' && !inWalkerGroup) {
+            } else if (user.role === 'walker' && !inWalkerGroup && !inAuthGroup) {
                 router.replace('/(walker)');
             }
         }
@@ -49,7 +48,6 @@ export const AuthProvider = ({ children }) => {
                 setUser(null);
             }
         } catch (error) {
-            console.error('Error verificando sesión:', error);
             setUser(null);
             await apiClient.removeToken();
         } finally {
@@ -67,7 +65,6 @@ export const AuthProvider = ({ children }) => {
             
             return { success: true };
         } catch (error) {
-            console.error('Error en login:', error);
             setError(error.message || 'Error al iniciar sesión');
             return { success: false, error: error.message };
         } finally {
@@ -82,11 +79,13 @@ export const AuthProvider = ({ children }) => {
             setUser(null);
             router.replace('/(auth)/login');
         } catch (error) {
-            console.error('Error en logout:', error);
+            setUser(null);
+            router.replace('/(auth)/login');
         } finally {
             setIsLoading(false);
         }
     };
+
 
     const register = async (data) => {
         try {
@@ -98,12 +97,18 @@ export const AuthProvider = ({ children }) => {
             
             return { success: true };
         } catch (error) {
-            console.error('Error en registro:', error);
             setError(error.message || 'Error al registrar usuario');
             return { success: false, error: error.message };
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const updateUser = (updatedData) => {
+        setUser(prevUser => ({
+            ...prevUser,
+            ...updatedData
+        }));
     };
 
     const clearError = () => setError(null);
@@ -116,6 +121,7 @@ export const AuthProvider = ({ children }) => {
         logout,
         register,
         checkSession,
+        updateUser,
         clearError,
         isAuthenticated: !!user
     };

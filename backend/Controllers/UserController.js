@@ -6,8 +6,16 @@ export const UserController = {
         try {
             return await UserService.getUserById(id);
         } catch (error) {
-            console.error('Error in UserController.fetchUserById:', error);
             throw error;
         }
     },
+
+    async mobileUpdateUser(id, userData) {
+        try {
+            return await UserService.mobileUpdateUser(id, userData);
+        } catch (error) {
+            throw error;
+        }
+    }
+
 };

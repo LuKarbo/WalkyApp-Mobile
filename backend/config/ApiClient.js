@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
 
-const API_BASE_URL = '';
+const API_BASE_URL = (Constants?.manifest?.extra?.API_BASE_URL) || process.env.API_BASE_URL;
 
 class ApiClient {
     constructor() {
@@ -83,7 +84,6 @@ class ApiClient {
         try {
             return await AsyncStorage.getItem(this.tokenKey);
         } catch (error) {
-            console.error('Error obteniendo token:', error);
             return null;
         }
     }
@@ -96,7 +96,7 @@ class ApiClient {
                 await AsyncStorage.removeItem(this.tokenKey);
             }
         } catch (error) {
-            console.error('Error guardando token:', error);
+            
         }
     }
 
@@ -104,7 +104,7 @@ class ApiClient {
         try {
             await AsyncStorage.removeItem(this.tokenKey);
         } catch (error) {
-            console.error('Error eliminando token:', error);
+            
         }
     }
 

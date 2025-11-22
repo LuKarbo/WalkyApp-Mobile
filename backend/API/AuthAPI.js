@@ -3,13 +3,12 @@ import apiClient from '../config/ApiClient.js';
 export const AuthAPI = {
     async login(credentials) {        
         try {
-            console.log("llega, ", {credentials});
+            
             const response = await apiClient.post('/auth/login', {
                 email: credentials.email,
                 password: credentials.password
             });
-            console.log("fin");
-            console.log(response);
+            
             const userData = response.data.user;
             
             if (userData.token) {
@@ -32,13 +31,11 @@ export const AuthAPI = {
                 token: userData.token
             };
         } catch (error) {
-            console.error("Error en login:", error);
             throw new Error("Credenciales inválidas o cuenta inactiva");
         }
     },
 
     async checkSession(token) {
-        console.log("Simulando verificación de sesión con token:", token);
         
         try {
             const response = await apiClient.post('/auth/check-session', null, {
@@ -68,19 +65,17 @@ export const AuthAPI = {
                 token: userData.token || token
             };
         } catch (error) {
-            console.error("Error en checkSession:", error);
             apiClient.removeToken();
             throw new Error("Sesión inválida o expirada");
         }
     },
 
     async logout() {
-        console.log("Simulando cierre de sesión");
         
         try {
             await apiClient.post('/auth/logout');
         } catch (error) {
-            console.error("Error en logout:", error);
+            
         }
         
         apiClient.removeToken();
