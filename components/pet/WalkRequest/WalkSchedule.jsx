@@ -49,6 +49,68 @@ export default function WalkSchedule({
         }
     };
 
+    const handleDateChange = (e) => {
+        const value = e.target.value;
+        if (value) {
+            try {
+                const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+                if (!dateRegex.test(value)) {
+                    console.warn('Formato de fecha inválido');
+                    return;
+                }
+                
+                const newDate = new Date(value + 'T00:00:00');
+                
+                if (isNaN(newDate.getTime())) {
+                    console.warn('Fecha inválida');
+                    return;
+                }
+                
+                setDate(newDate);
+            } catch (error) {
+                console.error('Error al procesar fecha:', error);
+            }
+        } else {
+            setDate(null);
+        }
+    };
+
+    const handleTimeChange = (e) => {
+        const value = e.target.value;
+        if (value) {
+            try {
+                const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
+                if (!timeRegex.test(value)) {
+                    console.warn('Formato de hora inválido');
+                    return;
+                }
+                
+                const [hours, minutes] = value.split(':');
+                const hoursNum = parseInt(hours, 10);
+                const minutesNum = parseInt(minutes, 10);
+                
+                if (hoursNum < 0 || hoursNum > 23 || minutesNum < 0 || minutesNum > 59) {
+                    console.warn('Hora fuera de rango');
+                    return;
+                }
+                
+                const newTime = new Date();
+                newTime.setHours(hoursNum, minutesNum, 0, 0);
+                
+                if (isNaN(newTime.getTime())) {
+                    console.warn('Hora inválida');
+                    return;
+                }
+                
+                setTime(newTime);
+            } catch (error) {
+                console.error('Error al procesar hora:', error);
+            }
+        } else {
+            setTime(null);
+        }
+    };
+
     const calculateFinalPrice = () => {
         const basePrice = walkerSettings?.pricePerPet || 15000;
         const petCount = selectedPets.length;
@@ -215,11 +277,7 @@ export default function WalkSchedule({
                             <input
                                 type="date"
                                 value={date ? date.toISOString().split('T')[0] : ''}
-                                onChange={(e) => {
-                                    if (e.target.value) {
-                                        setDate(new Date(e.target.value + 'T00:00:00'));
-                                    }
-                                }}
+                                onChange={handleDateChange}
                                 min={new Date().toISOString().split('T')[0]}
                                 style={{
                                     backgroundColor: !date ? '#fef2f2' : '#f9fafb',
@@ -280,14 +338,7 @@ export default function WalkSchedule({
                             <input
                                 type="time"
                                 value={time ? time.toTimeString().split(' ')[0].substring(0, 5) : ''}
-                                onChange={(e) => {
-                                    if (e.target.value) {
-                                        const [hours, minutes] = e.target.value.split(':');
-                                        const newTime = new Date();
-                                        newTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-                                        setTime(newTime);
-                                    }
-                                }}
+                                onChange={handleTimeChange}
                                 style={{
                                     backgroundColor: !time ? '#fef2f2' : '#f9fafb',
                                     borderWidth: !time ? '1.5px' : '1px',

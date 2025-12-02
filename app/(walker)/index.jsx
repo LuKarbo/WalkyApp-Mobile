@@ -319,7 +319,8 @@ const WalkerWalksScreen = () => {
             setShowStartWalkModal(false);
             setSelectedWalk(null);
         } catch (err) {
-            setError("Error starting walk: " + err.message);
+            setShowStartWalkModal(false);
+            showError(err.message);
         } finally {
             setActionLoading(false);
         }
@@ -346,7 +347,6 @@ const WalkerWalksScreen = () => {
             }
             
         } catch (err) {
-            setError('Error loading review: ' + err.message);
             showError('No se pudo cargar la reseña');
         }
     };
@@ -358,7 +358,6 @@ const WalkerWalksScreen = () => {
             setCurrentReceipt(receipt);
             setShowReceiptModal(true);
         } catch (err) {
-            setError('Error loading receipt: ' + err.message);
             showError('No se pudo cargar el recibo');
         } finally {
             setReceiptLoading(false);
